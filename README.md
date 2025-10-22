@@ -45,6 +45,6 @@ This workflow generates SVG badges and commits them into `docs/coverage-badges/`
 
 Example markdown for the badge:
 
-[![Branch coverage](https://github.com/Synalima/learn-to-code/tree/main/docs/coverage-badges/badge_branchcoverage.svg)]
+[![Branch coverage](https://raw.githubusercontent.com/Synalima/learn-to-code/main/docs/coverage-badges/badge_branchcoverage.svg)](https://raw.githubusercontent.com/Synalima/learn-to-code/main/docs/coverage-badges/badge_branchcoverage.svg)
 
 The CI step that commits badges runs only for pushes to `main` and uses `[skip ci]` in the commit message to avoid triggering additional workflow runs.
