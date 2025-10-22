@@ -31,17 +31,10 @@ jobs:
       - name: Build
         run: dotnet build --no-restore --configuration Release
 
-      - name: Prepare TestResults directory
-        run: mkdir -p ./TestResults
 
       - name: Test with coverage (coverlet.msbuild)
         run: |
-          dotnet test ./test/Karel.Tests/Karel.Tests.csproj --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutput=./test/Karel.Tests/TestResults/coverage /p:CoverletOutputFormat=cobertura
-
-      - name: List TestResults for diagnostics
-        run: |
-          echo "--- TestResults listing ---"
-          ls -la ./test/Karel.Tests/TestResults || true
+          dotnet test ./test/Karel.Tests/Karel.Tests.csproj --configuration Release /p:CollectCoverage=true /p:CoverletOutput=./test/Karel.Tests/TestResults/coverage /p:CoverletOutputFormat=cobertura
 
       - name: Show TestResults tree (diagnostic)
         run: |
