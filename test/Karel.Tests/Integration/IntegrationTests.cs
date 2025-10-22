@@ -1,0 +1,1 @@
+//BUG: Karel.Tests.Integration.IntegrationTests class does not have direct tests.

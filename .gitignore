@@ -1,0 +1,13 @@
+# Build folders
+**/bin
+**/obj
+
+# user-specific
+*.user
+*.suo
+
+# NuGet packages
+**/packages/*
+
+# Test result files
+TestResults/

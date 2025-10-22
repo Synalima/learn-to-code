@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "likec4.likec4-vscode",
+        "davidanson.vscode-markdownlint",
+        "github.copilot-chat",
+        "github.copilot",
+        "github.vscode-github-actions",
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "ms-dotnettools.csdevkit",
+        "ms-dotnettools.csharp"
+    ]
+}

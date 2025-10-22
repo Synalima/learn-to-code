@@ -1,0 +1,1 @@
+//BUG: Karel.Tests.Robots.RobotTests class does not have direct tests.

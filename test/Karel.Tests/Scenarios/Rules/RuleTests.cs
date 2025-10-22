@@ -1,0 +1,1 @@
+//BUG: Karel.Tests.Scenarios.Rules.RuleTests class does not have direct tests.
