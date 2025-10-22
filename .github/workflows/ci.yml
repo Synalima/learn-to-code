@@ -61,7 +61,7 @@ jobs:
             ls -la ./test/Karel.Tests/TestResults || true
             exit 1
           fi
-          reportgenerator -reports:./test/Karel.Tests/TestResults/coverage.cobertura.xml -targetdir:./test/Karel.Tests/TestResults/CoverageReport -reporttypes:HtmlSummary;Badges
+          reportgenerator -reports:./test/Karel.Tests/TestResults/coverage.cobertura.xml -targetdir:./test/Karel.Tests/TestResults/CoverageReport -reporttypes:'HtmlSummary;Badges;'
           echo "Coverage report generated at ./test/Karel.Tests/TestResults/CoverageReport"
 
       - name: Upload coverage report artifact
