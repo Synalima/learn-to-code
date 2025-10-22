@@ -43,14 +43,8 @@ Coverage badges (committed to the repository)
 
 This workflow generates SVG badges and commits them into `docs/coverage-badges/` on the `main` branch. After a successful run on `main` the badges will be available in the repo and can be referenced directly.
 
-```text
-https://raw.githubusercontent.com/Synalima/learn-to-code/main/docs/coverage-badges/Coverage.svg
-```
-
 Example markdown for the badge:
 
-```markdown
-[![coverage](https://raw.githubusercontent.com/Synalima/learn-to-code/main/docs/coverage-badges/Coverage.svg)](https://github.com/Synalima/learn-to-code/tree/main/docs/coverage-badges/)
-```
+[![Branch coverage](https://github.com/Synalima/learn-to-code/tree/main/docs/coverage-badges/badge_branchcoverage.svg)]
 
 The CI step that commits badges runs only for pushes to `main` and uses `[skip ci]` in the commit message to avoid triggering additional workflow runs.
