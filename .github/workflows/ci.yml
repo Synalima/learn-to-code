@@ -44,6 +44,27 @@ jobs:
           echo "--- TestResults listing ---"
           ls -la ./test/Karel.Tests/TestResults || true
 
+      - name: Normalize coverage file
+        run: |
+          set -e
+          echo "Searching for coverage XML files in ./test/Karel.Tests/TestResults"
+          found=""
+          for f in ./test/Karel.Tests/TestResults/*coverage*.xml ./test/Karel.Tests/TestResults/*.cobertura.xml ./test/Karel.Tests/TestResults/*.xml; do
+            if [ -f "$f" ]; then
+              found="$f"
+              break
+            fi
+          done
+          if [ -z "$found" ]; then
+            echo "No coverage XML files found in TestResults"
+            ls -la ./test/Karel.Tests/TestResults || true
+            exit 1
+          fi
+          echo "Found coverage file: $found"
+          cp -v "$found" ./test/Karel.Tests/TestResults/coverage.xml
+          echo "Copied $found -> ./test/Karel.Tests/TestResults/coverage.xml"
+          ls -la ./test/Karel.Tests/TestResults
+
       - name: Install ReportGenerator (for coverage reports & badges)
         run: |
           dotnet tool install -g dotnet-reportgenerator-globaltool --version 5.1.20
@@ -56,8 +77,13 @@ jobs:
           # Ensure the dotnet tool path is available
           export PATH="$HOME/.dotnet/tools:$PATH"
           mkdir -p ./test/Karel.Tests/TestResults/CoverageReport
-          # Accept any cobertura/xml files created by coverlet
-          reportgenerator -reports:./test/Karel.Tests/TestResults/*.xml -targetdir:./test/Karel.Tests/TestResults/CoverageReport -reporttypes:HtmlSummary;Badges
+          # Use the normalized coverage.xml file
+          if [ ! -f ./test/Karel.Tests/TestResults/coverage.xml ]; then
+            echo "coverage.xml not found, aborting"
+            ls -la ./test/Karel.Tests/TestResults || true
+            exit 1
+          fi
+          reportgenerator -reports:./test/Karel.Tests/TestResults/coverage.xml -targetdir:./test/Karel.Tests/TestResults/CoverageReport -reporttypes:HtmlSummary;Badges
           echo "Coverage report generated at ./test/Karel.Tests/TestResults/CoverageReport"
 
       - name: Upload coverage report artifact
