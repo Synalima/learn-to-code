@@ -31,9 +31,18 @@ jobs:
       - name: Build
         run: dotnet build --no-restore --configuration Release
 
+      - name: Prepare TestResults directory
+        run: mkdir -p ./test/Karel.Tests/TestResults
+
       - name: Test with coverage
         run: |
-          dotnet test ./test/Karel.Tests/Karel.Tests.csproj --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./TestResults/coverage.xml
+          # Use a prefix; coverlet will append the format suffix (e.g. .cobertura.xml)
+          dotnet test ./test/Karel.Tests/Karel.Tests.csproj --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutput=./test/Karel.Tests/TestResults/coverage /p:CoverletOutputFormat=cobertura
+
+      - name: List TestResults for diagnostics
+        run: |
+          echo "--- TestResults listing ---"
+          ls -la ./test/Karel.Tests/TestResults || true
 
       - name: Install ReportGenerator (for coverage reports & badges)
         run: |
@@ -47,7 +56,8 @@ jobs:
           # Ensure the dotnet tool path is available
           export PATH="$HOME/.dotnet/tools:$PATH"
           mkdir -p ./test/Karel.Tests/TestResults/CoverageReport
-          reportgenerator -reports:./test/Karel.Tests/TestResults/coverage.xml -targetdir:./test/Karel.Tests/TestResults/CoverageReport -reporttypes:HtmlSummary;Badges
+          # Accept any cobertura/xml files created by coverlet
+          reportgenerator -reports:./test/Karel.Tests/TestResults/*.xml -targetdir:./test/Karel.Tests/TestResults/CoverageReport -reporttypes:HtmlSummary;Badges
           echo "Coverage report generated at ./test/Karel.Tests/TestResults/CoverageReport"
 
       - name: Upload coverage report artifact
