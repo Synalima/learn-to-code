@@ -39,11 +39,13 @@ cd test\Karel.Tests
 dotnet test
 ```
 
-Coverage badges (committed to the repository)
+Build and Coverage badges (committed to the repository)
 
 This workflow generates SVG badges and commits them into `docs/coverage-badges/` on the `main` branch. After a successful run on `main` the badges will be available in the repo and can be referenced directly.
 
-Example markdown for the badge:
+The current status of the MAIN branch is:
+
+[![Build status](https://github.com/Synalima/learn-to-code/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Synalima/learn-to-code/actions/workflows/ci.yml)
 
 [![Branch coverage](https://raw.githubusercontent.com/Synalima/learn-to-code/main/docs/coverage-badges/badge_branchcoverage.svg)](https://raw.githubusercontent.com/Synalima/learn-to-code/main/docs/coverage-badges/badge_branchcoverage.svg)
 
