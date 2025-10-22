@@ -15,7 +15,7 @@ Goals
 
 Requirements
 
-- .NET 6 SDK (the project targets `net6.0` to match common environments)
+- .NET 8 SDK (the project targets `net8.0` to match common environments)
 
 Quickstart
 
@@ -45,8 +45,6 @@ This workflow generates SVG badges and commits them into `docs/coverage-badges/`
 
 The current status of the MAIN branch is:
 
-[![Build status](https://github.com/Synalima/learn-to-code/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Synalima/learn-to-code/actions/workflows/ci.yml)
-
-[![Branch coverage](https://raw.githubusercontent.com/Synalima/learn-to-code/main/docs/coverage-badges/badge_branchcoverage.svg)](https://raw.githubusercontent.com/Synalima/learn-to-code/main/docs/coverage-badges/badge_branchcoverage.svg)
+[![Build status](https://github.com/Synalima/learn-to-code/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Synalima/learn-to-code/actions/workflows/ci.yml) [![Branch coverage](https://raw.githubusercontent.com/Synalima/learn-to-code/main/docs/coverage-badges/badge_branchcoverage.svg)](https://raw.githubusercontent.com/Synalima/learn-to-code/main/docs/coverage-badges/badge_branchcoverage.svg)
 
 The CI step that commits badges runs only for pushes to `main` and uses `[skip ci]` in the commit message to avoid triggering additional workflow runs.
