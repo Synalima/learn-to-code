@@ -36,7 +36,7 @@ jobs:
 
       - name: Test with coverage (coverlet.msbuild)
         run: |
-          dotnet test ./test/Karel.Tests/Karel.Tests.csproj --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutput=./test/Karel.Tests/TestResults/coverage /p:CoverletOutputFormat=cobertura
+          dotnet test ./test/Karel.Tests/Karel.Tests.csproj --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutput=./test/Karel.Tests/TestResults /p:CoverletOutputFormat=cobertura
 
       - name: List TestResults for diagnostics
         run: |
@@ -47,22 +47,6 @@ jobs:
         run: |
           echo "--- TestResults tree ---"
           find ./test/Karel.Tests/TestResults -maxdepth 4 -type f -print || true
-
-      - name: Normalize coverage file
-        run: |
-          set -e
-          echo "Searching recursively for coverage XML files in ./test/Karel.Tests/TestResults"
-          found=$(find ./test/Karel.Tests/TestResults -type f \( -iname '*coverage*.xml' -o -iname '*.cobertura.xml' -o -iname '*.xml' \) -print -quit || true)
-          if [ -z "$found" ]; then
-            echo "No coverage XML files found in TestResults"
-            ls -la ./test/Karel.Tests/TestResults || true
-            find ./test/Karel.Tests/TestResults -type d -maxdepth 2 -print || true
-            exit 1
-          fi
-          echo "Found coverage file: $found"
-          cp -v "$found" ./test/Karel.Tests/TestResults/coverage.xml
-          echo "Copied $found -> ./test/Karel.Tests/TestResults/coverage.xml"
-          ls -la ./test/Karel.Tests/TestResults
 
       - name: Install ReportGenerator (for coverage reports & badges)
         run: |
@@ -77,12 +61,12 @@ jobs:
           export PATH="$HOME/.dotnet/tools:$PATH"
           mkdir -p ./test/Karel.Tests/TestResults/CoverageReport
           # Use the normalized coverage.xml file
-          if [ ! -f ./test/Karel.Tests/TestResults/coverage.xml ]; then
-            echo "coverage.xml not found, aborting"
+          if [ ! -f ./test/Karel.Tests/TestResults/coverage.cobertura.xml ]; then
+            echo "coverage.cobertura.xml not found, aborting"
             ls -la ./test/Karel.Tests/TestResults || true
             exit 1
           fi
-          reportgenerator -reports:./test/Karel.Tests/TestResults/coverage.xml -targetdir:./test/Karel.Tests/TestResults/CoverageReport -reporttypes:HtmlSummary;Badges
+          reportgenerator -reports:./test/Karel.Tests/TestResults/coverage.cobertura.xml -targetdir:./test/Karel.Tests/TestResults/CoverageReport -reporttypes:HtmlSummary;Badges
           echo "Coverage report generated at ./test/Karel.Tests/TestResults/CoverageReport"
 
       - name: Upload coverage report artifact
