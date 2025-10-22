@@ -34,9 +34,8 @@ jobs:
       - name: Prepare TestResults directory
         run: mkdir -p ./test/Karel.Tests/TestResults
 
-      - name: Test with coverage
+      - name: Test with coverage (coverlet.msbuild)
         run: |
-          # Use a prefix; coverlet will append the format suffix (e.g. .cobertura.xml)
           dotnet test ./test/Karel.Tests/Karel.Tests.csproj --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutput=./test/Karel.Tests/TestResults/coverage /p:CoverletOutputFormat=cobertura
 
       - name: List TestResults for diagnostics
@@ -44,20 +43,20 @@ jobs:
           echo "--- TestResults listing ---"
           ls -la ./test/Karel.Tests/TestResults || true
 
+      - name: Show TestResults tree (diagnostic)
+        run: |
+          echo "--- TestResults tree ---"
+          find ./test/Karel.Tests/TestResults -maxdepth 4 -type f -print || true
+
       - name: Normalize coverage file
         run: |
           set -e
-          echo "Searching for coverage XML files in ./test/Karel.Tests/TestResults"
-          found=""
-          for f in ./test/Karel.Tests/TestResults/*coverage*.xml ./test/Karel.Tests/TestResults/*.cobertura.xml ./test/Karel.Tests/TestResults/*.xml; do
-            if [ -f "$f" ]; then
-              found="$f"
-              break
-            fi
-          done
+          echo "Searching recursively for coverage XML files in ./test/Karel.Tests/TestResults"
+          found=$(find ./test/Karel.Tests/TestResults -type f \( -iname '*coverage*.xml' -o -iname '*.cobertura.xml' -o -iname '*.xml' \) -print -quit || true)
           if [ -z "$found" ]; then
             echo "No coverage XML files found in TestResults"
             ls -la ./test/Karel.Tests/TestResults || true
+            find ./test/Karel.Tests/TestResults -type d -maxdepth 2 -print || true
             exit 1
           fi
           echo "Found coverage file: $found"
