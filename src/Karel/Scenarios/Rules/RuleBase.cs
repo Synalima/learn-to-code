@@ -34,10 +34,7 @@ public abstract class RuleBase : IRule
     /// <param name="duration">The duration of the rule.</param>
     protected RuleBase(TimeSpan duration)
     {
-        if (duration <= TimeSpan.Zero)
-        {
-            throw new ArgumentOutOfRangeException(nameof(duration), "Duration must be positive or zero.");
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(duration, TimeSpan.Zero, nameof(duration));
 
         this.Duration = duration;
     }

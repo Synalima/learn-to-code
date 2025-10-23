@@ -10,7 +10,6 @@ public class FlatMap : GridMapBase
     /// </summary>
     /// <param name="width">The width of the map.</param>
     /// <param name="height">The height of the map.</param>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when width or height is less than or equal to zero.</exception>
     public FlatMap(uint width, uint height) : base(width, height, 1)
     {
     }
@@ -18,11 +17,8 @@ public class FlatMap : GridMapBase
     /// <inheritdoc/>
     public override Cell GetCell(uint x, uint y, uint z = 0)
     {
-        if (z != 0)
-        {
-            throw new IndexOutOfRangeException("FlatMap only has one layer (z=0)");
-        }
-
+        ArgumentOutOfRangeException.ThrowIfNotEqual(z, 0u, nameof(z));
+        
         return base.GetCell(x, y, z);
     }
 }

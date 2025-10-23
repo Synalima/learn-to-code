@@ -34,10 +34,7 @@ public abstract class ScenarioBase : IScenario
     /// <param name="robots">The robots involved in the scenario.</param>
     protected ScenarioBase(TimeSpan duration, IMap map, ReadOnlyCollection<IRule> rules, ReadOnlyCollection<IRobot> robots)
     {
-        if (duration <= TimeSpan.Zero)
-        {
-            throw new ArgumentOutOfRangeException(nameof(duration), "Duration must be positive.");
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(duration, TimeSpan.Zero, nameof(duration));
 
         this.Duration = duration;
         this.Map = map ?? throw new ArgumentNullException(nameof(map));

@@ -50,17 +50,24 @@ namespace Karel.Tests.Scenarios.Maps
         }
 
         [Fact]
-        public void FlatMap_GetCellThrowsIndexOutOfRangeException_WithInvalidX()
+        public void FlatMap_GetCellThrowsArgumentOutOfRangeException_WithInvalidX()
         {
             var map = new FlatMap(Random.Shared.Next(1u, 10u), Random.Shared.Next(11u, 20u));
-            Assert.Throws<IndexOutOfRangeException>(() => map.GetCell(map.Width, Random.Shared.Next(0u, map.Height - 1u), 1u));
+            Assert.Throws<ArgumentOutOfRangeException>(() => map.GetCell(map.Width, Random.Shared.Next(0u, map.Height - 1u), 1u));
         }
 
         [Fact]
-        public void FlatMap_GetCellThrowsIndexOutOfRangeException_WithInvalidY()
+        public void FlatMap_GetCellThrowsArgumentOutOfRangeException_WithInvalidY()
         {
             var map = new FlatMap(Random.Shared.Next(1u, 10u), Random.Shared.Next(11u, 20u));
-            Assert.Throws<IndexOutOfRangeException>(() => map.GetCell(Random.Shared.Next(0u, map.Width - 1u), map.Height, 1u));
+            Assert.Throws<ArgumentOutOfRangeException>(() => map.GetCell(Random.Shared.Next(0u, map.Width - 1u), map.Height, 1u));
+        }
+
+        [Fact]
+        public void FlatMap_GetCellThrowsArgumentOutOfRangeException_WithInvalidZ()
+        {
+            var map = new FlatMap(Random.Shared.Next(1u, 10u), Random.Shared.Next(11u, 20u));
+            Assert.Throws<ArgumentOutOfRangeException>(() => map.GetCell(Random.Shared.Next(0u, map.Width - 1u), Random.Shared.Next(0u, map.Height - 1u), Random.Shared.Next(1u, 10u)));
         }
 
         [Fact]
@@ -115,6 +122,6 @@ namespace Karel.Tests.Scenarios.Maps
                     Assert.True(map.InBounds(x, y, 0));
                 }
             }
-        }
+         }
     }
 }

@@ -17,28 +17,22 @@ public static class RandomExtensions
     public static T Next<T>(this Random rng, T minValue, T maxValue)
         where T : struct, IConvertible
     {
-        if (rng == null)
-        {
-            throw new ArgumentNullException(nameof(rng));
-        } 
-            
-        var type = typeof(T);
-        var typeCode = Type.GetTypeCode(type);
+        ArgumentNullException.ThrowIfNull(rng);
 
         // Convert endpoints to decimal for broad-range arithmetic
         decimal min = Convert.ToDecimal(minValue);
         decimal max = Convert.ToDecimal(maxValue);
 
-        if (min > max)
-        {
-            throw new ArgumentException("minValue must be less than or equal to maxValue");
-        }
-        
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(min, max, nameof(minValue));
+       
         if (min == max) return minValue;
 
         // Random.NextDouble returns [0.0, 1.0), so result is in [min, max)
         decimal sample = (decimal)rng.NextDouble();
         decimal scaled = min + sample * (max - min);
+
+        var type = typeof(T);
+        var typeCode = Type.GetTypeCode(type);
 
         switch (typeCode)
         {

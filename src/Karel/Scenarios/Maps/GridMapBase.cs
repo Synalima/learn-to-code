@@ -66,20 +66,9 @@ public abstract class GridMapBase : IMap
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the width, height, or depth is less than or equal to zero.</exception>
     public GridMapBase(uint width, uint height, uint depth)
     {
-        if (width == 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(width), "Width must be positive");
-        }
-
-        if (height == 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(height), "Height must be positive");
-        }
-
-        if (depth == 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(depth), "Depth must be positive");
-        }
+        ArgumentOutOfRangeException.ThrowIfEqual(width, 0u, nameof(width));
+        ArgumentOutOfRangeException.ThrowIfEqual(height, 0u, nameof(height));
+        ArgumentOutOfRangeException.ThrowIfEqual(depth, 0u, nameof(depth));
 
         this.Width = width;
         this.Height = height;
