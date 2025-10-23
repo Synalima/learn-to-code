@@ -6,10 +6,15 @@ namespace Karel.Robots;
 /// <summary>
 /// Base class for robots implementing common functionality.
 /// </summary>
-public abstract class RobotBase : ObservableBase, IRobot
+/// <remarks>
+/// Initializes a new instance of the <see cref="RobotBase"/> class.
+/// </remarks>
+/// <param name="facing">The initial facing direction of the robot.</param>
+/// <param name="position">The initial position of the robot.</param>
+public abstract class RobotBase(Direction facing, Cell position) : ObservableBase, IRobot
 {
-    private Direction facing;
-    private Cell position;
+    private Direction facing = facing;
+    private Cell position = position;
 
     /// <inheritdoc/>
     public Direction Facing
@@ -39,17 +44,6 @@ public abstract class RobotBase : ObservableBase, IRobot
                 this.NotifyPropertyChanged(nameof(Position), oldValue, value);
             }
         }
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RobotBase"/> class.
-    /// </summary>
-    /// <param name="facing">The initial facing direction of the robot.</param>
-    /// <param name="position">The initial position of the robot.</param>
-    protected RobotBase(Direction facing, Cell position)
-    {
-        this.facing = facing;
-        this.position = position;
     }
 
     /// <inheritdoc/>
