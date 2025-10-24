@@ -14,6 +14,6 @@ public abstract class ObservableBase : INotifyPropertyChanged
 
     protected void NotifyPropertyChanged<T>(string propertyName, T oldValue, T newValue)
     {
-        this.PropertyChanged?.Invoke(this, new Common.PropertyChangedEventArgs<T>(propertyName, oldValue, newValue));
+        this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs<T>(propertyName, oldValue, newValue));
     }
 }
