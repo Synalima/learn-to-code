@@ -10,6 +10,8 @@ namespace Karel.Scenarios;
 /// </summary>
 public abstract class ScenarioBase : IScenario
 {
+    private TimeSpan StartTime { get; } = DateTime.Now.TimeOfDay;
+
     /// <inheritdoc/>
     public TimeSpan Duration { get; }
 
@@ -23,7 +25,13 @@ public abstract class ScenarioBase : IScenario
     public ReadOnlyCollection<IRobot> Robots { get; init; }
 
     /// <inheritdoc/>
-    public abstract void Run();
+    public virtual void Run()
+    {
+        while (DateTime.Now.TimeOfDay - this.StartTime < this.Duration)
+        {
+            this.Rules.AsParallel().ForAll(rule => rule.Apply(this.Map, this.Robots));
+        }
+    }
 
     /// <summary>
     /// Protected constructor to initialize the scenario with specified parameters.

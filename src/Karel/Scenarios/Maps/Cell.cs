@@ -10,56 +10,16 @@ namespace Karel.Scenarios.Maps;
 /// </remarks>
 public sealed class Cell(uint x, uint y, uint z, CellType type = CellType.Empty) : ObservableBase, ICell
 {
-    private uint x = x;
-    private uint y = y;
-    private uint z = z;
-
     private CellType type = type;
 
     /// <inheritdoc/>
-    public uint X
-    {
-        get => x;
-        set
-        {
-            if (x != value)
-            {
-                var oldValue = x;
-                x = value;
-                NotifyPropertyChanged(nameof(X), oldValue, value);
-            }
-        }
-    }
+    public uint X { get; } = x;
+    
+    /// <inheritdoc/>
+    public uint Y { get; } = y;
 
     /// <inheritdoc/>
-    public uint Y
-    {
-        get => y;
-        set
-        {
-            if (y != value)
-            {
-                var oldValue = y;
-                y = value;
-                NotifyPropertyChanged(nameof(Y), oldValue, value);
-            }
-        }
-    }
-
-    /// <inheritdoc/>
-    public uint Z
-    {
-        get => z;
-        set
-        {
-            if (z != value)
-            {
-                var oldValue = z;
-                z = value;
-                NotifyPropertyChanged(nameof(Z), oldValue, value);
-            }
-        }
-    }
+    public uint Z { get; } = z;
 
     /// <inheritdoc/>
     public CellType Type

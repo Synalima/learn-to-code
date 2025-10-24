@@ -35,6 +35,7 @@ public interface IMap
     /// <param name="x">The x-coordinate of the cell.</param>
     /// <param name="y">The y-coordinate of the cell.</param>
     /// <param name="z">The z-coordinate of the cell.</param>
+    /// <param name="cell">The cell at the specified coordinates.</param>
     /// <returns>The cell at the specified coordinates.</returns>
-    Cell GetCell(uint x, uint y, uint z);
+    bool TryGetCell(uint x, uint y, uint z, out Cell? cell);
 }

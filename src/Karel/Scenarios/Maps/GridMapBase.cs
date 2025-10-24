@@ -29,32 +29,106 @@ public abstract class GridMapBase : IMap
     /// <param name="y">The y-coordinate to check.</param>
     /// <param name="z">The z-coordinate (layer) to check.</param>
     /// <returns>True if the coordinates are within bounds; otherwise, false.</returns>
-    public bool InBounds(uint x, uint y, uint z) => x >= 0 && y >= 0 && z >= 0 && x < this.Width && y < this.Height && z < this.Depth;
+    /// <summary>
+    /// Checks whether the provided coordinates are inside the map bounds.
+    /// Because the coordinates are unsigned, only the upper bounds need to be checked.
+    /// </summary>
+    public bool InBounds(uint x, uint y, uint z) => x < this.Width && y < this.Height && z < this.Depth;
 
     /// <summary>
-    /// Gets the cell at the specified coordinates including depth (z).
+    /// Try to get the cell at the specified coordinates. Returns true and sets <paramref name="cell"/>
+    /// when the coordinates are in bounds; otherwise returns false and sets <c>null</c>.
     /// </summary>
-    /// <param name="x">The x-coordinate of the cell.</param>
-    /// <param name="y">The y-coordinate of the cell.</param>
-    /// <param name="z">The z-coordinate (layer) of the cell.</param>
-    /// <returns>The cell at the specified coordinates.</returns>
-    public virtual Cell GetCell(uint x, uint y, uint z)
+    public bool TryGetCell(uint x, uint y, uint z, out Cell? cell)
     {
-        if (!InBounds(x, y, z))
+        if (InBounds(x, y, z))
         {
-            throw new IndexOutOfRangeException("Cell out of bounds");
+            cell = this.cells[x, y, z];
+            return true;
         }
 
-        return this.cells[x, y, z];
+        cell = null;
+        return false;
     }
 
     /// <summary>
-    /// Private constructor for internal use.
+    /// Gets the orthogonal neighbors of the specified cell.
     /// </summary>
-    private GridMapBase()
+    /// <param name="cell">The cell whose neighbors to retrieve.</param>
+    /// <returns>An enumerable collection of orthogonal neighbor cells.</returns>
+    public IEnumerable<Cell> GetOrthogonalNeighbors(Cell cell)
     {
-        // Provide safe defaults so non-nullable fields/properties are initialized.
-        this.cells = new Cell[this.Width, this.Height, this.Depth];
+        ArgumentNullException.ThrowIfNull(cell);
+
+        return this.GetOrthogonalNeighbors(cell.X, cell.Y, cell.Z);
+    }
+
+    /// <summary>
+    /// Returns the 6 orthogonal neighbors (along X, Y and Z axes) for the specified cell coordinates.
+    /// Neighbors that would be out of bounds are omitted.
+    /// </summary>
+    public IEnumerable<Cell> GetOrthogonalNeighbors(uint x, uint y, uint z)
+    {
+        // Offsets for the 6 axis-aligned neighbors.
+        var deltas = new (int dx, int dy, int dz)[]
+        {
+            (1, 0, 0), (-1, 0, 0),
+            (0, 1, 0), (0, -1, 0),
+            (0, 0, 1), (0, 0, -1)
+        };
+
+        foreach (var (dx, dy, dz) in deltas)
+        {
+            long nx = x + dx;
+            long ny = y + dy;
+            long nz = z + dz;
+
+            if (nx >= 0 && ny >= 0 && nz >= 0
+                && (uint)nx < this.Width && (uint)ny < this.Height && (uint)nz < this.Depth)
+            {
+                yield return this.cells[(uint)nx, (uint)ny, (uint)nz];
+            }
+        }
+    }
+
+    /// <summary>
+    /// Returns all adjacent neighbors in the 3x3x3 cube around the specified cell (up to 26 neighbors).
+    /// The center cell is excluded. Out-of-bounds neighbors are omitted.
+    /// </summary>
+    /// <param name="cell">The cell whose neighbors to retrieve.</param>
+    /// <returns>An enumerable collection of adjacent neighbor cells.</returns>
+    public IEnumerable<Cell> GetAllAdjacentNeighbors(Cell cell)
+    {
+        ArgumentNullException.ThrowIfNull(cell);
+
+        return this.GetAllAdjacentNeighbors(cell.X, cell.Y, cell.Z);
+    }
+
+    /// <summary>
+    /// Returns all adjacent neighbors in the 3x3x3 cube around the specified cell (up to 26 neighbors).
+    /// The center cell is excluded. Out-of-bounds neighbors are omitted.
+    /// </summary>
+    public IEnumerable<Cell> GetAllAdjacentNeighbors(uint x, uint y, uint z)
+    {
+        for (int dz = -1; dz <= 1; dz++)
+            for (int dy = -1; dy <= 1; dy++)
+                for (int dx = -1; dx <= 1; dx++)
+                {
+                    if (dx == 0 && dy == 0 && dz == 0)
+                    {
+                        continue; // skip the center
+                    }
+
+                    long nx = x + dx;
+                    long ny = y + dy;
+                    long nz = z + dz;
+
+                    if (nx >= 0 && ny >= 0 && nz >= 0
+                        && (uint)nx < this.Width && (uint)ny < this.Height && (uint)nz < this.Depth)
+                    {
+                        yield return this.cells[(uint)nx, (uint)ny, (uint)nz];
+                    }
+                }
     }
 
     /// <summary>

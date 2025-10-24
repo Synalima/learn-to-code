@@ -1,3 +1,6 @@
+using Karel.Robots;
+using Karel.Scenarios.Maps;
+
 namespace Karel.Scenarios.Rules;
 
 /// <summary>
@@ -6,36 +9,17 @@ namespace Karel.Scenarios.Rules;
 public abstract class RuleBase : IRule
 {
     /// <inheritdoc/>
-    public TimeSpan Duration { get; }
-
-    /// <inheritdoc/>
-    public virtual bool IsApplicable()
+    public virtual bool IsApplicable(IMap map, IReadOnlyCollection<IRobot> robots)
     {
         return false;
     }
 
     /// <inheritdoc/>
-    public virtual void Apply()
+    public virtual void Apply(IMap map, IReadOnlyCollection<IRobot> robots)
     {
-        throw new NotImplementedException();
-    }
-
-    /// <summary>
-    /// Private constructor to prevent parameterless instantiation.
-    /// </summary>
-    private RuleBase()
-    {
-        // Prevent parameterless instantiation.
-    }
-
-    /// <summary>
-    /// Constructor with duration parameter.
-    /// </summary>
-    /// <param name="duration">The duration of the rule.</param>
-    protected RuleBase(TimeSpan duration)
-    {
-        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(duration, TimeSpan.Zero, nameof(duration));
-
-        this.Duration = duration;
+        if(!this.IsApplicable(map, robots))
+        {
+            return;
+        }
     }
 }

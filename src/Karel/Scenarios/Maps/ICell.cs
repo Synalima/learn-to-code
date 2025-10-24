@@ -12,14 +12,19 @@ public enum CellType
     Empty = 0,
 
     /// <summary>
-    /// The starting position of the robot.
+    /// A starting position of the robot in the scenario.
     /// </summary>
     StartPosition = 1,
 
     /// <summary>
-    /// A cell that is obstructed.
+    /// A cell that is obstructed, it can be neither entered nor passed through.
     /// </summary>
     Obstructed = 2,
+
+    /// <summary>
+    /// An objective cell.    
+    /// </summary>
+    Objective = 4
 }
 
 /// <summary>
