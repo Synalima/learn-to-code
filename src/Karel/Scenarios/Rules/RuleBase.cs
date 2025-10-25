@@ -15,11 +15,8 @@ public abstract class RuleBase : IRule
     }
 
     /// <inheritdoc/>
-    public virtual void Apply(IMap map, IReadOnlyCollection<IRobot> robots)
+    public virtual bool Apply(IMap map, IReadOnlyCollection<IRobot> robots)
     {
-        if(!this.IsApplicable(map, robots))
-        {
-            return;
-        }
+        return this.IsApplicable(map, robots);
     }
 }

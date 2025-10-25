@@ -51,23 +51,16 @@ public abstract class GridMapBase : IMap
         return false;
     }
 
-    /// <summary>
-    /// Gets the orthogonal neighbors of the specified cell.
-    /// </summary>
-    /// <param name="cell">The cell whose neighbors to retrieve.</param>
-    /// <returns>An enumerable collection of orthogonal neighbor cells.</returns>
-    public IEnumerable<Cell> GetOrthogonalNeighbors(Cell cell)
+    /// <inheritdoc/>
+    public IEnumerable<ICell> GetOrthogonalNeighbors(ICell cell)
     {
         ArgumentNullException.ThrowIfNull(cell);
 
         return this.GetOrthogonalNeighbors(cell.X, cell.Y, cell.Z);
     }
 
-    /// <summary>
-    /// Returns the 6 orthogonal neighbors (along X, Y and Z axes) for the specified cell coordinates.
-    /// Neighbors that would be out of bounds are omitted.
-    /// </summary>
-    public IEnumerable<Cell> GetOrthogonalNeighbors(uint x, uint y, uint z)
+    /// <inheritdoc/>
+    public IEnumerable<ICell> GetOrthogonalNeighbors(uint x, uint y, uint z)
     {
         // Offsets for the 6 axis-aligned neighbors.
         var deltas = new (int dx, int dy, int dz)[]
@@ -91,24 +84,16 @@ public abstract class GridMapBase : IMap
         }
     }
 
-    /// <summary>
-    /// Returns all adjacent neighbors in the 3x3x3 cube around the specified cell (up to 26 neighbors).
-    /// The center cell is excluded. Out-of-bounds neighbors are omitted.
-    /// </summary>
-    /// <param name="cell">The cell whose neighbors to retrieve.</param>
-    /// <returns>An enumerable collection of adjacent neighbor cells.</returns>
-    public IEnumerable<Cell> GetAllAdjacentNeighbors(Cell cell)
+    /// <inheritdoc/>
+    public IEnumerable<ICell> GetAllAdjacentNeighbors(ICell cell)
     {
         ArgumentNullException.ThrowIfNull(cell);
 
         return this.GetAllAdjacentNeighbors(cell.X, cell.Y, cell.Z);
     }
 
-    /// <summary>
-    /// Returns all adjacent neighbors in the 3x3x3 cube around the specified cell (up to 26 neighbors).
-    /// The center cell is excluded. Out-of-bounds neighbors are omitted.
-    /// </summary>
-    public IEnumerable<Cell> GetAllAdjacentNeighbors(uint x, uint y, uint z)
+    /// <inheritdoc/>
+    public IEnumerable<ICell> GetAllAdjacentNeighbors(uint x, uint y, uint z)
     {
         for (int dz = -1; dz <= 1; dz++)
             for (int dy = -1; dy <= 1; dy++)

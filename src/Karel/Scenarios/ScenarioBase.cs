@@ -22,14 +22,20 @@ public abstract class ScenarioBase : IScenario
     public ReadOnlyCollection<IRule> Rules { get; }
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<IRobot> Robots { get; init; }
+    public ReadOnlyObservableCollection<IRobot> Robots { get; init; }
 
     /// <inheritdoc/>
-    public virtual void Run()
+    public virtual void Run(int delay = 1)
     {
-        while (DateTime.Now.TimeOfDay - this.StartTime < this.Duration)
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(delay, 0, nameof(delay));
+
+        bool rulesApplicable = this.Rules.Any(rule => rule.IsApplicable(this.Map, this.Robots));
+        while (rulesApplicable && DateTime.Now.TimeOfDay - this.StartTime < this.Duration)
         {
             this.Rules.AsParallel().ForAll(rule => rule.Apply(this.Map, this.Robots));
+            this.Robots.AsParallel().ForAll(robot => robot.Act());
+            rulesApplicable = this.Rules.Any(rule => rule.IsApplicable(this.Map, this.Robots));
+            Task.Delay(delay).Wait();
         }
     }
 
@@ -40,13 +46,17 @@ public abstract class ScenarioBase : IScenario
     /// <param name="map">The map associated with the scenario.</param>
     /// <param name="rules">The rules applicable to the scenario.</param>
     /// <param name="robots">The robots involved in the scenario.</param>
-    protected ScenarioBase(TimeSpan duration, IMap map, ReadOnlyCollection<IRule> rules, ReadOnlyCollection<IRobot> robots)
+    protected ScenarioBase(TimeSpan duration, IMap map, ReadOnlyCollection<IRule> rules, ReadOnlyObservableCollection<IRobot> robots)
     {
+        ArgumentNullException.ThrowIfNull(map, nameof(map));
+        ArgumentNullException.ThrowIfNull(rules, nameof(rules));
+        ArgumentNullException.ThrowIfNull(robots, nameof(robots));
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(duration, TimeSpan.Zero, nameof(duration));
-
+        ArgumentOutOfRangeException.ThrowIfZero(robots.Count, nameof(robots));
+        
         this.Duration = duration;
-        this.Map = map ?? throw new ArgumentNullException(nameof(map));
-        this.Rules = rules ?? throw new ArgumentNullException(nameof(rules));
-        this.Robots = robots ?? throw new ArgumentNullException(nameof(robots));
+        this.Map = map;
+        this.Rules = rules;
+        this.Robots = robots;
     }
 }

@@ -23,5 +23,6 @@ public interface IRule
     /// </summary>
     /// <param name="map">The map on which the rule is applied.</param>
     /// <param name="robots">The collection of robots involved in the scenario.</param>
-    void Apply(IMap map, IReadOnlyCollection<IRobot> robots);
+    /// <returns>True if the rule was applied; otherwise, false.</returns>
+    bool Apply(IMap map, IReadOnlyCollection<IRobot> robots);
 }

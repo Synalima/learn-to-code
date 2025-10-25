@@ -181,5 +181,245 @@ public sealed class GridMapBaseTests
         Assert.Equal(expected, coords);
     }
 
+[Fact]
+    public void GetAllAdjacentNeighbors_ICell_ReturnsEightForCenter_OnFlatMap()
+    {
+        var map = new FlatMap(5u, 5u);
+        Assert.True(map.TryGetCell(2u, 2u, 0u, out var cell));
+        var neighbors = map.GetAllAdjacentNeighbors(cell!).ToList();
+
+        Assert.Equal(8, neighbors.Count);
+
+        var coords = neighbors.Select(n => (n.X, n.Y, n.Z)).ToHashSet();
+        var expected = new HashSet<(uint, uint, uint)>();
+        for (uint dx = 1u; dx <= 3u; dx++)
+            for (uint dy = 1u; dy <= 3u; dy++)
+            {
+                if (dx == 2u && dy == 2u) continue;
+                expected.Add((dx, dy, 0u));
+            }
+
+        Assert.Equal(expected, coords);
+    }
+
+    [Fact]
+    public void GetAllAdjacentNeighbors_ICell_ReturnsThreeForCorner_OnFlatMap()
+    {
+        var map = new FlatMap(5u, 5u);
+        Assert.True(map.TryGetCell(0u, 0u, 0u, out var cell));
+        var neighbors = map.GetAllAdjacentNeighbors(cell!).ToList();
+
+        Assert.Equal(3, neighbors.Count);
+
+        var coords = neighbors.Select(n => (n.X, n.Y, n.Z)).ToHashSet();
+        var expected = new HashSet<(uint, uint, uint)>
+        {
+            (0u, 1u, 0u),
+            (1u, 0u, 0u),
+            (1u, 1u, 0u)
+        };
+
+        Assert.Equal(expected, coords);
+    }
+
+    [Fact]
+    public void GetAllAdjacentNeighbors_ICell_ReturnsZero_OnSingleCellFlatMap()
+    {
+        var map = new FlatMap(1u, 1u);
+        Assert.True(map.TryGetCell(0u, 0u, 0u, out var cell));
+
+        var neighbors = map.GetAllAdjacentNeighbors(cell!).ToList();
+
+        Assert.Empty(neighbors);
+    }
+
+    [Fact]
+    public void GetAllAdjacentNeighbors_ICell_Returns26ForCenter_In3D()
+    {
+        var map = new ConcreteGridMap(3u, 3u, 3u);
+        Assert.True(map.TryGetCell(1u, 1u, 1u, out var cell));
+
+        var neighbors = map.GetAllAdjacentNeighbors(cell!).ToList();
+
+        Assert.Equal(26, neighbors.Count);
+
+        var coords = neighbors.Select(n => (n.X, n.Y, n.Z)).ToHashSet();
+        var expected = new HashSet<(uint, uint, uint)>();
+        for (uint dx = 0u; dx <= 2u; dx++)
+            for (uint dy = 0u; dy <= 2u; dy++)
+                for (uint dz = 0u; dz <= 2u; dz++)
+                {
+                    if (dx == 1u && dy == 1u && dz == 1u) continue;
+                    expected.Add((dx, dy, dz));
+                }
+
+        Assert.Equal(expected, coords);
+    }
+
+    [Fact]
+    public void GetAllAdjacentNeighbors_ICell_ReturnsSevenForCorner_In3D()
+    {
+        var map = new ConcreteGridMap(3u, 3u, 3u);
+        Assert.True(map.TryGetCell(0u, 0u, 0u, out var cell));
+
+        var neighbors = map.GetAllAdjacentNeighbors(cell!).ToList();
+
+        Assert.Equal(7, neighbors.Count);
+
+        var coords = neighbors.Select(n => (n.X, n.Y, n.Z)).ToHashSet();
+        var expected = new HashSet<(uint, uint, uint)>();
+        for (uint dx = 0u; dx <= 1u; dx++)
+            for (uint dy = 0u; dy <= 1u; dy++)
+                for (uint dz = 0u; dz <= 1u; dz++)
+                {
+                    if (dx == 0u && dy == 0u && dz == 0u) continue;
+                    expected.Add((dx, dy, dz));
+                }
+
+        Assert.Equal(expected, coords);
+    }
+
+    [Fact]
+    public void GetOrthogonalNeighbors_ICell_ReturnsFourForCenter_OnFlatMap()
+    {
+        var map = new FlatMap(5u, 5u);
+        Assert.True(map.TryGetCell(2u, 2u, 0u, out var cell));
+
+        var neighbors = map.GetOrthogonalNeighbors(cell!).ToList();
+
+        Assert.Equal(4, neighbors.Count);
+
+        var coords = neighbors.Select(n => (n.X, n.Y, n.Z)).ToHashSet();
+        var expected = new HashSet<(uint, uint, uint)>
+        {
+            (1u, 2u, 0u), // West
+            (3u, 2u, 0u), // East
+            (2u, 1u, 0u), // North
+            (2u, 3u, 0u)  // South
+        };
+
+        Assert.Equal(expected, coords);
+    }
+
+    [Fact]
+    public void GetOrthogonalNeighbors_ICell_ReturnsTwoForCorner_OnFlatMap()
+    {
+        var map = new FlatMap(5u, 5u);
+        Assert.True(map.TryGetCell(0u, 0u, 0u, out var cell));
+
+        var neighbors = map.GetOrthogonalNeighbors(cell!).ToList();
+
+        Assert.Equal(2, neighbors.Count);
+
+        var coords = neighbors.Select(n => (n.X, n.Y, n.Z)).ToHashSet();
+        var expected = new HashSet<(uint, uint, uint)>
+        {
+            (1u, 0u, 0u),
+            (0u, 1u, 0u)
+        };
+
+        Assert.Equal(expected, coords);
+    }
+
+    [Fact]
+    public void GetOrthogonalNeighbors_ICell_ReturnsThreeForEdge_OnFlatMap()
+    {
+        var map = new FlatMap(5u, 5u);
+        Assert.True(map.TryGetCell(0u, 2u, 0u, out var cell));
+
+        var neighbors = map.GetOrthogonalNeighbors(cell!).ToList();
+
+        Assert.Equal(3, neighbors.Count);
+
+        var coords = neighbors.Select(n => (n.X, n.Y, n.Z)).ToHashSet();
+        var expected = new HashSet<(uint, uint, uint)>
+        {
+            (1u, 2u, 0u), // East
+            (0u, 1u, 0u), // North
+            (0u, 3u, 0u)  // South
+        };
+
+        Assert.Equal(expected, coords);
+    }
+
+    [Fact]
+    public void GetOrthogonalNeighbors_ICell_ReturnsZero_OnSingleCellFlatMap()
+    {
+        var map = new FlatMap(1u, 1u);
+        Assert.True(map.TryGetCell(0u, 0u, 0u, out var cell));
+
+        var neighbors = map.GetOrthogonalNeighbors(cell!).ToList();
+
+        Assert.Empty(neighbors);
+    }
+
+    [Fact]
+    public void GetOrthogonalNeighbors_ICell_ReturnsSixForCenter_In3D()
+    {
+        var map = new ConcreteGridMap(3u, 3u, 3u);
+        Assert.True(map.TryGetCell(1u, 1u, 1u, out var cell));
+
+        var neighbors = map.GetOrthogonalNeighbors(cell!).ToList();
+
+        Assert.Equal(6, neighbors.Count);
+
+        var coords = neighbors.Select(n => (n.X, n.Y, n.Z)).ToHashSet();
+        var expected = new HashSet<(uint, uint, uint)>
+        {
+            (0u, 1u, 1u),
+            (2u, 1u, 1u),
+            (1u, 0u, 1u),
+            (1u, 2u, 1u),
+            (1u, 1u, 0u),
+            (1u, 1u, 2u)
+        };
+
+        Assert.Equal(expected, coords);
+    }
+
+    [Fact]
+    public void GetOrthogonalNeighbors_ICell_ReturnsThreeForCorner_In3D()
+    {
+        var map = new ConcreteGridMap(3u, 3u, 3u);
+        Assert.True(map.TryGetCell(0u, 0u, 0u, out var cell));
+
+        var neighbors = map.GetOrthogonalNeighbors(cell!).ToList();
+
+        Assert.Equal(3, neighbors.Count);
+
+        var coords = neighbors.Select(n => (n.X, n.Y, n.Z)).ToHashSet();
+        var expected = new HashSet<(uint, uint, uint)>
+        {
+            (1u, 0u, 0u),
+            (0u, 1u, 0u),
+            (0u, 0u, 1u)
+        };
+
+        Assert.Equal(expected, coords);
+    }
+
+    [Fact]
+    public void GetOrthogonalNeighbors_ICell_ReturnsFiveForFaceCenter_In3D()
+    {
+        var map = new ConcreteGridMap(3u, 3u, 3u);
+        Assert.True(map.TryGetCell(1u, 1u, 0u, out var cell));
+
+        var neighbors = map.GetOrthogonalNeighbors(cell!).ToList();
+
+        Assert.Equal(5, neighbors.Count);
+
+        var coords = neighbors.Select(n => (n.X, n.Y, n.Z)).ToHashSet();
+        var expected = new HashSet<(uint, uint, uint)>
+        {
+            (0u, 1u, 0u),
+            (2u, 1u, 0u),
+            (1u, 0u, 0u),
+            (1u, 2u, 0u),
+            (1u, 1u, 1u)
+        };
+
+        Assert.Equal(expected, coords);
+    }
+
     private class ConcreteGridMap(uint width, uint height, uint depth) : GridMapBase(width, height, depth) { }
 }

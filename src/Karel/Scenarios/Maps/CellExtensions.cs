@@ -12,7 +12,7 @@ public static class CellExtensions
     /// <returns><c>true</c> if the cell is empty; otherwise, <c>false</c>.</returns>
     public static bool IsEmpty(this ICell cell)
     {
-        return (cell.Type & CellType.Empty) == CellType.Empty;
+        return cell.Type.HasFlag(CellType.Empty);
     }
 
     /// <summary>
