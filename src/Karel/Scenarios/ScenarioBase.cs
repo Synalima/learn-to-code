@@ -10,11 +10,6 @@ namespace Karel.Scenarios;
 /// </summary>
 public abstract class ScenarioBase : IScenario
 {
-    private TimeSpan StartTime { get; } = DateTime.Now.TimeOfDay;
-
-    /// <inheritdoc/>
-    public TimeSpan Duration { get; }
-
     /// <inheritdoc/>
     public IMap Map { get; }
 
@@ -25,36 +20,49 @@ public abstract class ScenarioBase : IScenario
     public ReadOnlyObservableCollection<IRobot> Robots { get; init; }
 
     /// <inheritdoc/>
-    public virtual void Run(int delay = 1)
+    /// <summary>
+    /// Executes the scenario by running robot actions and applying rules until no further rules are applicable.
+    /// </summary>
+    /// <remarks>
+    /// The scenario runs in a loop where each robot performs its action, followed by the application of all applicable rules.
+    /// </remarks>
+    public void Run()
     {
-        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(delay, 0, nameof(delay));
-
-        bool rulesApplicable = this.Rules.Any(rule => rule.IsApplicable(this.Map, this.Robots));
-        while (rulesApplicable && DateTime.Now.TimeOfDay - this.StartTime < this.Duration)
+        bool rulesApplicable;
+        do
         {
-            this.Rules.AsParallel().ForAll(rule => rule.Apply(this.Map, this.Robots));
-            this.Robots.AsParallel().ForAll(robot => robot.Act());
-            rulesApplicable = this.Rules.Any(rule => rule.IsApplicable(this.Map, this.Robots));
-            Task.Delay(delay).Wait();
-        }
+            rulesApplicable = false;
+
+            foreach (var robot in this.Robots)
+            {
+                robot.Act();
+            }
+
+            foreach (var rule in this.Rules)
+            {
+                if (rule.IsApplicable())
+                {
+                    rule.Apply();
+                    rulesApplicable = true;
+                }
+            }
+
+        } while (rulesApplicable);
     }
 
     /// <summary>
     /// Protected constructor to initialize the scenario with specified parameters.
     /// </summary>
-    /// <param name="duration">The duration of the scenario.</param>
     /// <param name="map">The map associated with the scenario.</param>
     /// <param name="rules">The rules applicable to the scenario.</param>
     /// <param name="robots">The robots involved in the scenario.</param>
-    protected ScenarioBase(TimeSpan duration, IMap map, ReadOnlyCollection<IRule> rules, ReadOnlyObservableCollection<IRobot> robots)
+    protected ScenarioBase(IMap map, ReadOnlyCollection<IRule> rules, ReadOnlyObservableCollection<IRobot> robots)
     {
         ArgumentNullException.ThrowIfNull(map, nameof(map));
         ArgumentNullException.ThrowIfNull(rules, nameof(rules));
         ArgumentNullException.ThrowIfNull(robots, nameof(robots));
-        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(duration, TimeSpan.Zero, nameof(duration));
         ArgumentOutOfRangeException.ThrowIfZero(robots.Count, nameof(robots));
-        
-        this.Duration = duration;
+
         this.Map = map;
         this.Rules = rules;
         this.Robots = robots;

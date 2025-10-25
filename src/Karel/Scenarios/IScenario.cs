@@ -11,12 +11,6 @@ namespace Karel.Scenarios;
 public interface IScenario
 {
     /// <summary>
-    /// Gets the total duration of the scenario.
-    /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the duration is less than or equal to zero.</exception>
-    TimeSpan Duration { get; }
-
-    /// <summary>
     /// Gets the map associated with the scenario.
     /// </summary>
     /// <exception cref="ArgumentNullException">Thrown when the map is null.</exception>
@@ -37,7 +31,5 @@ public interface IScenario
     /// <summary>
     /// Runs the scenario.
     /// </summary>
-    /// <param name="delay">The delay in milliseconds between each action cycle. Recommended values are 1-5 ms for unit/integration tests.</param>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="delay"/> is less than or equal to zero.</exception>
-    void Run(int delay = 1);
+    void Run();
 }
