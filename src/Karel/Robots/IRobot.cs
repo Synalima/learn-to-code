@@ -18,6 +18,14 @@ public interface IRobot
     void Act();
 
     /// <summary>
+    /// Initializes the robot with the specified initial position.
+    /// </summary>
+    /// <param name="initialPosition">The initial position of the robot.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="initialPosition"/> is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="initialPosition"/> is out of the map bounds.</exception>
+    void Initialize(ICell initialPosition);
+
+    /// <summary>
     /// Attempts to move the robot to the specified cell.
     /// </summary>
     /// <param name="x">The x-coordinate of the target cell.</param>

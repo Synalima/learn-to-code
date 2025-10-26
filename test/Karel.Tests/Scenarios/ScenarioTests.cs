@@ -1,1 +1,0 @@
-//BUG: Karel.Tests.Scenarios.ScenarioTests class does not have direct tests.

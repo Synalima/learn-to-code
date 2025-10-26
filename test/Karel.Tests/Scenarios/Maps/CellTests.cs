@@ -9,10 +9,12 @@ namespace Karel.Tests.Scenarios.Maps;
 /// </summary>
 public sealed class CellTests
 {
+    private sealed class FakeMap() : GridMapBase(1u, 1u, 1u) { }
+
     [Fact]
     public void Constructor_ShouldInitializeCoordinates()
     {
-        var cell = new Cell(5, 10, 15);
+        var cell = new Cell(5, 10, 15, new FakeMap());
 
         Assert.Equal(5u, cell.X);
         Assert.Equal(10u, cell.Y);
@@ -22,7 +24,7 @@ public sealed class CellTests
     [Fact]
     public void Constructor_ShouldInitializeWithEmptyTypeByDefault()
     {
-        var cell = new Cell(1, 2, 3);
+        var cell = new Cell(1, 2, 3, new FakeMap());
 
         Assert.Equal(CellType.Empty, cell.Type);
     }
@@ -30,7 +32,7 @@ public sealed class CellTests
     [Fact]
     public void Constructor_ShouldInitializeWithSpecifiedType()
     {
-        var cell = new Cell(1, 2, 3, CellType.StartPosition);
+        var cell = new Cell(1, 2, 3, new FakeMap(), CellType.StartPosition);
 
         Assert.Equal(CellType.StartPosition, cell.Type);
     }
@@ -38,7 +40,7 @@ public sealed class CellTests
     [Fact]
     public void Type_ShouldUpdateValue()
     {
-        var cell = new Cell(1, 2, 3, CellType.Empty);
+        var cell = new Cell(1, 2, 3, new FakeMap(), CellType.Empty);
 
         cell.Type = CellType.Objective;
 
@@ -48,7 +50,7 @@ public sealed class CellTests
     [Fact]
     public void Type_ShouldNotifyPropertyChanged_WhenValueChanges()
     {
-        var cell = new Cell(1, 2, 3, CellType.Obstructed);
+        var cell = new Cell(1, 2, 3, new FakeMap(), CellType.Obstructed);
         var propertyChangedRaised = false;
         string changedPropertyName = string.Empty;
         CellType oldValue = cell.Type;
@@ -75,7 +77,7 @@ public sealed class CellTests
     [Fact]
     public void Type_ShouldNotNotifyPropertyChanged_WhenValueIsTheSame()
     {
-        var cell = new Cell(1, 2, 3, CellType.Empty);
+        var cell = new Cell(1, 2, 3, new FakeMap(), CellType.Empty);
         var propertyChangedRaised = false;
 
         cell.PropertyChanged += (sender, args) =>
@@ -91,7 +93,7 @@ public sealed class CellTests
     [Fact]
     public void Coordinates_ShouldBeReadOnly()
     {
-        var cell = new Cell(5, 10, 15);
+        var cell = new Cell(5, 10, 15, new FakeMap());
 
         Assert.Equal(5u, cell.X);
         Assert.Equal(10u, cell.Y);

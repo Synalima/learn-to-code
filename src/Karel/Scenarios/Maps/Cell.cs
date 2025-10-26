@@ -8,7 +8,7 @@ namespace Karel.Scenarios.Maps;
 /// <remarks>
 /// Initializes a new instance of the <see cref="Cell"/> class with specified coordinates and type.
 /// </remarks>
-public sealed class Cell(uint x, uint y, uint z, CellType type = CellType.Empty) : ObservableBase, ICell
+public sealed class Cell(uint x, uint y, uint z, IMap map, CellType type = CellType.Empty) : ObservableBase, ICell
 {
     private CellType type = type;
 
@@ -35,4 +35,7 @@ public sealed class Cell(uint x, uint y, uint z, CellType type = CellType.Empty)
             }
         }
     }
+
+    /// <inheritdoc/>
+    public IMap Map { get; init; } = map;
 }

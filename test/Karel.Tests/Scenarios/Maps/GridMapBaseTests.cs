@@ -9,6 +9,8 @@ namespace Karel.Tests.Scenarios.Maps;
 /// </summary>
 public sealed class GridMapBaseTests
 {
+    private class ConcreteGridMap(uint width, uint height, uint depth) : GridMapBase(width, height, depth) { }
+
     [Fact]
     public void TryGetCell_ReturnsTrueAndCell_WhenInBounds()
     {
@@ -181,7 +183,7 @@ public sealed class GridMapBaseTests
         Assert.Equal(expected, coords);
     }
 
-[Fact]
+    [Fact]
     public void GetAllAdjacentNeighbors_ICell_ReturnsEightForCenter_OnFlatMap()
     {
         var map = new FlatMap(5u, 5u);
@@ -421,5 +423,45 @@ public sealed class GridMapBaseTests
         Assert.Equal(expected, coords);
     }
 
-    private class ConcreteGridMap(uint width, uint height, uint depth) : GridMapBase(width, height, depth) { }
+    [Fact]
+    public void InBounds_WithValidCoordinates_ReturnsTrue()
+    {
+        var map = new ConcreteGridMap(3, 3, 3);
+        Assert.True(map.InBounds(0, 0, 0));
+        Assert.True(map.InBounds(2, 2, 2));
+        Assert.True(map.InBounds(1, 1, 1));
+    }
+
+    [Fact]
+    public void InBounds_WithInvalidCoordinates_ReturnsFalse()
+    {
+        var map = new ConcreteGridMap(3, 3, 3);
+        Assert.False(map.InBounds(3, 0, 0));
+        Assert.False(map.InBounds(0, 3, 0));
+        Assert.False(map.InBounds(0, 0, 3));
+        Assert.False(map.InBounds(100, 100, 100));
+    }
+
+    [Fact]
+    public void InBounds_ICell_WithinBounds_ReturnsTrue()
+    {
+        var map = new ConcreteGridMap(2, 2, 2);
+        var cell = new Cell(1, 1, 1, map);
+        Assert.True(map.InBounds(cell));
+    }
+
+    [Fact]
+    public void InBounds_ICell_OutOfBounds_ReturnsFalse()
+    {
+        var map = new ConcreteGridMap(2, 2, 2);
+        var cell = new Cell(2, 0, 0, map);
+        Assert.False(map.InBounds(cell));
+    }
+
+    [Fact]
+    public void InBounds_ICell_Null_ThrowsArgumentNullException()
+    {
+        var map = new ConcreteGridMap(2, 2, 2);
+        Assert.Throws<ArgumentNullException>(() => map.InBounds(null!));
+    }
 }

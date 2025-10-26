@@ -56,4 +56,9 @@ public interface ICell
     /// The type of the cell.
     /// </summary>
     public CellType Type { get; set; }
+
+    /// <summary>
+    /// The map this cell belongs to.
+    /// </summary>
+    public IMap Map { get; }
 }

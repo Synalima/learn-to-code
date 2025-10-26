@@ -33,25 +33,17 @@ public class ScenarioBaseTests
         }
     }
 
-    private class TestRobot : IRobot
+    private class TestRobot : RobotBase
     {
         public int ActCount { get; private set; }
-        public ICell Position { get; } = new Cell(0, 0, 0);
 
         public TestRobot() { this.ActCount = 0; }
 
-        public void Act() => this.ActCount++;
-
-        public bool TryMoveTo(uint x, uint y, out IList<string> errors) { errors = new List<string>(); return false; }
-        public bool TryMoveTo(uint x, uint y, uint z, out IList<string> errors) { errors = new List<string>(); return false; }
+        public override void Act() => this.ActCount++;
     }
 
-    private class TestScenario : ScenarioBase
+    private class TestScenario(IMap map, ReadOnlyCollection<IRule> rules, ReadOnlyObservableCollection<IRobot> robots) : ScenarioBase(map, rules, robots)
     {
-        public TestScenario(IMap map, ReadOnlyCollection<IRule> rules, ReadOnlyObservableCollection<IRobot> robots)
-            : base(map, rules, robots)
-        {
-        }
     }
 
     [Fact]

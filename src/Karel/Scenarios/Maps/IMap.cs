@@ -21,6 +21,14 @@ public interface IMap
     uint Depth { get; }
 
     /// <summary>
+    /// Checks if the specified cell is within the bounds of the map.
+    /// </summary>
+    /// <param name="cell">The cell to check.</param>
+    /// <returns>True if the cell is within bounds; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="cell"/> is null.</exception>
+    bool InBounds(ICell cell);
+
+    /// <summary>
     /// Checks if the specified coordinates are within the bounds of the map.
     /// </summary>
     /// <param name="x">The x-coordinate to check.</param>

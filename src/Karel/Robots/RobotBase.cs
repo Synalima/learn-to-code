@@ -6,14 +6,9 @@ namespace Karel.Robots;
 /// <summary>
 /// Base class for robots implementing common functionality.
 /// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="RobotBase"/> class.
-/// </remarks>
-/// <param name="position">The initial position of the robot.</param>
-public abstract class RobotBase(ICell position, IMap map) : ObservableBase, IRobot
+public abstract class RobotBase() : ObservableBase, IRobot
 {
-    private ICell position = position;
-    private readonly IMap map = map;
+    private ICell position = null!;
 
     /// <inheritdoc/>
     public ICell Position
@@ -34,6 +29,15 @@ public abstract class RobotBase(ICell position, IMap map) : ObservableBase, IRob
     public abstract void Act();
 
     /// <inheritdoc/>
+    public void Initialize(ICell initialPosition)
+    {
+        ArgumentNullException.ThrowIfNull(initialPosition);
+        ArgumentOutOfRangeException.ThrowIfEqual(initialPosition.Map.InBounds(initialPosition), false, nameof(initialPosition));
+
+        this.Position = initialPosition;
+    }
+
+    /// <inheritdoc/>
     public bool TryMoveTo(uint x, uint y, out IList<string> errors)
     {
         return this.TryMoveTo(x, y, 0, out errors);
@@ -46,7 +50,7 @@ public abstract class RobotBase(ICell position, IMap map) : ObservableBase, IRob
 
         try
         {
-            if (!this.map.TryGetCell(x, y, z, out var targetCell))
+            if (!this.Position.Map.TryGetCell(x, y, z, out var targetCell))
             {
                 errors.Add("Target cell does not exist.");
                 return false;
@@ -58,7 +62,7 @@ public abstract class RobotBase(ICell position, IMap map) : ObservableBase, IRob
                 return false;
             }
 
-            if (!this.map.GetAllAdjacentNeighbors(this.Position).Contains(targetCell))
+            if (!this.Position.Map.GetAllAdjacentNeighbors(this.Position).Contains(targetCell))
             {
                 errors.Add("Target cell is not adjacent.");
                 return false;

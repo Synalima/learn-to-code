@@ -7,38 +7,27 @@ public abstract class GridMapBase : IMap
 {
     private readonly Cell[,,] cells;
 
-    /// <summary>
-    /// The width of the map.
-    /// </summary>
+    /// <inheritdoc/>
     public uint Width { get; }
 
-    /// <summary>
-    /// The height of the map.
-    /// </summary>
+    /// <inheritdoc/>
     public uint Height { get; }
 
-    /// <summary>
-    /// The depth (number of layers) of the map.
-    /// </summary>
+    /// <inheritdoc/>
     public uint Depth { get; }
 
-    /// <summary>
-    /// Checks if the specified coordinates are within the bounds of the map, including depth.
-    /// </summary>
-    /// <param name="x">The x-coordinate to check.</param>
-    /// <param name="y">The y-coordinate to check.</param>
-    /// <param name="z">The z-coordinate (layer) to check.</param>
-    /// <returns>True if the coordinates are within bounds; otherwise, false.</returns>
-    /// <summary>
-    /// Checks whether the provided coordinates are inside the map bounds.
-    /// Because the coordinates are unsigned, only the upper bounds need to be checked.
-    /// </summary>
+    /// <inheritdoc/>
+    public bool InBounds(ICell cell)
+    {
+        ArgumentNullException.ThrowIfNull(cell);
+
+        return this.InBounds(cell.X, cell.Y, cell.Z);
+    }
+
+    /// <inheritdoc/>
     public bool InBounds(uint x, uint y, uint z) => x < this.Width && y < this.Height && z < this.Depth;
 
-    /// <summary>
-    /// Try to get the cell at the specified coordinates. Returns true and sets <paramref name="cell"/>
-    /// when the coordinates are in bounds; otherwise returns false and sets <c>null</c>.
-    /// </summary>
+    /// <inheritdoc/>
     public bool TryGetCell(uint x, uint y, uint z, out Cell? cell)
     {
         if (InBounds(x, y, z))
@@ -141,7 +130,7 @@ public abstract class GridMapBase : IMap
             {
                 for (uint z = 0; z < depth; z++)
                 {
-                    this.cells[x, y, z] = new Cell(x, y, z);
+                    this.cells[x, y, z] = new Cell(x, y, z, this);
                 }
             }
         }

@@ -28,6 +28,8 @@ public abstract class ScenarioBase : IScenario
     /// </remarks>
     public void Run()
     {
+        // TODO: Initialize robots' positions before starting the scenario, prefer CellType.Start if available.
+
         bool rulesApplicable;
         do
         {
@@ -58,6 +60,9 @@ public abstract class ScenarioBase : IScenario
     /// <param name="robots">The robots involved in the scenario.</param>
     protected ScenarioBase(IMap map, ReadOnlyCollection<IRule> rules, ReadOnlyObservableCollection<IRobot> robots)
     {
+        // TODO: Refactor to remove circular dependency between ScenarioBase and RuleBase.
+        // TODO: Rules should not be passed, rather, created based on scenario configuration.
+
         ArgumentNullException.ThrowIfNull(map, nameof(map));
         ArgumentNullException.ThrowIfNull(rules, nameof(rules));
         ArgumentNullException.ThrowIfNull(robots, nameof(robots));

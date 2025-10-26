@@ -103,6 +103,8 @@ namespace Karel.Tests.Scenarios.Maps
             public uint Y => 2u;
 
             public uint Z => 3u;
+
+            public IMap Map => throw new NotImplementedException();
         }
     }
 }

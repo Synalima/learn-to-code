@@ -11,19 +11,23 @@ namespace Karel.Tests.Scenarios.Rules;
 /// </summary>
 public class ElapsedTimeRuleTests
 {
-    private class TestRobot : IRobot
+    private sealed class FakeMap() : GridMapBase(1u, 1u, 1u)
     {
-        public ICell Position { get; } = new Cell(0, 0, 0);
-        public void Act() { }
-        public bool TryMoveTo(uint x, uint y, out IList<string> errors) { errors = []; return false; }
-        public bool TryMoveTo(uint x, uint y, uint z, out IList<string> errors) { errors = []; return false; }
+    }
+
+    private class TestRobot : RobotBase
+    {
+        public override void Act()
+        {
+            // No action needed for testing
+        }
     }
 
     [Fact]
     public void IsApplicable_IsFalse_BeforeInitialize()
     {
-        var map = new FlatMap(1u, 1u);
-        var robots = new ReadOnlyCollection<IRobot>(new List<IRobot> { new TestRobot() });
+        var map = new FakeMap();
+        var robots = new ReadOnlyCollection<IRobot>([new TestRobot()]);
         var rule = new ElapsedTimeRule(map, robots, TimeSpan.FromMilliseconds(10));
 
         Assert.False(rule.IsApplicable());
@@ -32,12 +36,12 @@ public class ElapsedTimeRuleTests
     [Fact]
     public async Task IsApplicable_BecomesTrue_AfterDurationFromInitialize()
     {
-        var map = new FlatMap(1u, 1u);
-        var robots = new ReadOnlyCollection<IRobot>(new List<IRobot> { new TestRobot() });
+        var map = new FakeMap();
+        var robots = new ReadOnlyCollection<IRobot>([new TestRobot()]);
         var rule = new ElapsedTimeRule(map, robots, TimeSpan.FromMilliseconds(50));
 
         rule.Initialize();
-        
+
         // Immediately after initialize it should not be applicable
         Assert.False(rule.IsApplicable());
 
