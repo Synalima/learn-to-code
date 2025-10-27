@@ -116,7 +116,7 @@ public class RobotBaseTests
     [Fact]
     public void TryMoveTo_WhenMapThrows_ReturnsFalseAndContainsExceptionMessage()
     {
-        var map = new FakeMap(1, 1, 1);
+    var map = new FakeMap(2, 2, 1);
         var start = new Cell(0, 0, 0, map);
         var robot = new ConcreteRobot();
         robot.Initialize(start);

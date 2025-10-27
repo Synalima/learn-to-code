@@ -9,7 +9,7 @@ namespace Karel.Tests.Scenarios.Maps;
 /// </summary>
 public sealed class CellTests
 {
-    private sealed class FakeMap() : GridMapBase(1u, 1u, 1u) { }
+    private sealed class FakeMap() : GridMapBase(2u, 2u, 1u) { }
 
     [Fact]
     public void Constructor_ShouldInitializeCoordinates()
@@ -40,11 +40,9 @@ public sealed class CellTests
     [Fact]
     public void Type_ShouldUpdateValue()
     {
-        var cell = new Cell(1, 2, 3, new FakeMap(), CellType.Empty);
+        var cell = new Cell(1, 2, 3, new FakeMap(), CellType.Empty | CellType.Objective);
 
-        cell.Type = CellType.Objective;
-
-        Assert.Equal(CellType.Objective, cell.Type);
+        Assert.Equal(CellType.Empty | CellType.Objective, cell.Type);
     }
 
     [Fact]

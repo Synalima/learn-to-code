@@ -227,12 +227,13 @@ public sealed class GridMapBaseTests
     [Fact]
     public void GetAllAdjacentNeighbors_ICell_ReturnsZero_OnSingleCellFlatMap()
     {
-        var map = new FlatMap(1u, 1u);
+        // Smallest allowed flat map is 2x2; verify corner cell has three adjacent neighbors.
+        var map = new FlatMap(2u, 2u);
         Assert.True(map.TryGetCell(0u, 0u, 0u, out var cell));
 
         var neighbors = map.GetAllAdjacentNeighbors(cell!).ToList();
 
-        Assert.Empty(neighbors);
+        Assert.Equal(3, neighbors.Count);
     }
 
     [Fact]
@@ -347,12 +348,13 @@ public sealed class GridMapBaseTests
     [Fact]
     public void GetOrthogonalNeighbors_ICell_ReturnsZero_OnSingleCellFlatMap()
     {
-        var map = new FlatMap(1u, 1u);
+        // Smallest allowed flat map is 2x2; corner cell has two orthogonal neighbors.
+        var map = new FlatMap(2u, 2u);
         Assert.True(map.TryGetCell(0u, 0u, 0u, out var cell));
 
         var neighbors = map.GetOrthogonalNeighbors(cell!).ToList();
 
-        Assert.Empty(neighbors);
+        Assert.Equal(2, neighbors.Count);
     }
 
     [Fact]

@@ -17,12 +17,6 @@ public interface IScenario
     IMap Map { get; }
 
     /// <summary>
-    /// Gets the read-only collection of rules applicable to the scenario.
-    /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when there are no rules in the scenario.</exception>
-    ReadOnlyCollection<IRule> Rules { get; }
-
-    /// <summary>
     /// Gets the read-only collection of robots participating in the scenario.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when there are no robots in the scenario.</exception>

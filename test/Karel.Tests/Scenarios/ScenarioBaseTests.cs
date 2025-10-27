@@ -42,8 +42,15 @@ public class ScenarioBaseTests
         public override void Act() => this.ActCount++;
     }
 
-    private class TestScenario(IMap map, ReadOnlyCollection<IRule> rules, ReadOnlyObservableCollection<IRobot> robots) : ScenarioBase(map, rules, robots)
+    private class TestScenario : ScenarioBase
     {
+        public TestScenario(IMap map, ReadOnlyObservableCollection<IRobot> robots)
+            : base(map, robots)
+        {
+        }
+
+        // Expose a test-only initializer so tests can assign rules after construction.
+        public void InitializeRules(ReadOnlyCollection<IRule> rules) => this.SetRules(rules);
     }
 
     [Fact]
@@ -51,13 +58,14 @@ public class ScenarioBaseTests
     {
         var map = new FlatMap(3u, 3u);
         var rule = new TestRule(maxApplications: 2); // will apply twice
-        var rules = new ReadOnlyCollection<IRule>(new List<IRule> { rule });
+        var rules = new ReadOnlyCollection<IRule>([rule]);
 
         var robot = new TestRobot();
         var obs = new ObservableCollection<IRobot> { robot };
         var robots = new ReadOnlyObservableCollection<IRobot>(obs);
 
-        var scenario = new TestScenario(map, rules, robots);
+        var scenario = new TestScenario(map, robots);
+        scenario.InitializeRules(rules);
 
         scenario.Run();
 
@@ -74,12 +82,13 @@ public class ScenarioBaseTests
         var map = new FlatMap(3u, 3u);
         var r1 = new TestRule(1);
         var r2 = new TestRule(1);
-        var rules = new ReadOnlyCollection<IRule>(new List<IRule> { r1, r2 });
+        var rules = new ReadOnlyCollection<IRule>([r1, r2]);
 
         var robot = new TestRobot();
-        var robots = new ReadOnlyObservableCollection<IRobot>(new ObservableCollection<IRobot> { robot });
+        var robots = new ReadOnlyObservableCollection<IRobot>([robot]);
 
-        var scenario = new TestScenario(map, rules, robots);
+        var scenario = new TestScenario(map, robots);
+        scenario.InitializeRules(rules);
 
         scenario.Run();
 
@@ -93,11 +102,13 @@ public class ScenarioBaseTests
     public void Constructor_MapGetter_ReturnsConstructorMap()
     {
         var map = new FlatMap(2u, 2u);
-        var rules = new ReadOnlyCollection<IRule>(new List<IRule>());
+        // Provide a non-empty rules collection (one dummy rule) so SetRules accepts it.
+        var rules = new ReadOnlyCollection<IRule>([new TestRule(0)]);
 
-        var robots = new ReadOnlyObservableCollection<IRobot>(new ObservableCollection<IRobot> { new TestRobot() });
+        var robots = new ReadOnlyObservableCollection<IRobot>([new TestRobot()]);
 
-        var scenario = new TestScenario(map, rules, robots);
+        var scenario = new TestScenario(map, robots);
+        scenario.InitializeRules(rules);
 
         // The Map getter should return the same instance that was provided to the constructor
         Assert.Same(map, scenario.Map);
@@ -106,15 +117,36 @@ public class ScenarioBaseTests
     [Fact]
     public void Constructor_Throws_OnNullArgumentsOrEmptyRobots()
     {
-        var map = new FlatMap(1u, 1u);
+        var map = new FlatMap(2u, 2u);
         var dummyRule = new TestRule(0);
-        var rules = new ReadOnlyCollection<IRule>(new List<IRule> { dummyRule });
+        var rules = new ReadOnlyCollection<IRule>([dummyRule]);
 
-        var emptyRobots = new ReadOnlyObservableCollection<IRobot>(new ObservableCollection<IRobot>());
-        Assert.Throws<ArgumentOutOfRangeException>(() => new TestScenario(map, rules, emptyRobots));
+        var emptyRobots = new ReadOnlyObservableCollection<IRobot>([]);
+        Assert.Throws<ArgumentOutOfRangeException>(() => new TestScenario(map, emptyRobots));
 
-        Assert.Throws<ArgumentNullException>(() => new TestScenario(null!, rules, new ReadOnlyObservableCollection<IRobot>(new ObservableCollection<IRobot> { new TestRobot() })));
-        Assert.Throws<ArgumentNullException>(() => new TestScenario(map, null!, new ReadOnlyObservableCollection<IRobot>(new ObservableCollection<IRobot> { new TestRobot() })));
-        Assert.Throws<ArgumentNullException>(() => new TestScenario(map, rules, null!));
+        Assert.Throws<ArgumentNullException>(() => new TestScenario(null!, new ReadOnlyObservableCollection<IRobot>([new TestRobot()])));
+        var validRobots = new ReadOnlyObservableCollection<IRobot>([new TestRobot()]);
+        var s = new TestScenario(map, validRobots);
+        Assert.Throws<ArgumentNullException>(() => s.InitializeRules(null!));
+        Assert.Throws<ArgumentNullException>(() => new TestScenario(map, null!));
+    }
+
+    [Fact]
+    public void SetRules_Throws_OnSecondAssignment()
+    {
+        var map = new FlatMap(2u, 2u);
+        var robot = new TestRobot();
+        var robots = new ReadOnlyObservableCollection<IRobot>([robot]);
+
+        var scenario = new TestScenario(map, robots);
+
+        var rules1 = new ReadOnlyCollection<IRule>([new TestRule(0)]);
+        var rules2 = new ReadOnlyCollection<IRule>([new TestRule(0)]);
+
+        // First assignment ok
+        scenario.InitializeRules(rules1);
+
+        // Second assignment should throw InvalidOperationException
+        Assert.Throws<InvalidOperationException>(() => scenario.InitializeRules(rules2));
     }
 }

@@ -1,12 +1,7 @@
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
-using Karel.Robots;
-using Karel.Scenarios.Maps;
-
 namespace Karel.Scenarios.Rules;
 
 /// <summary>
-/// A rule that becomes applicable after a fixed duration has elapsed since construction.
+/// A rule that is applicable for a fixed duration has elapsed since initialized.
 /// </summary>
 public sealed class ElapsedTimeRule : RuleBase
 {
@@ -14,18 +9,20 @@ public sealed class ElapsedTimeRule : RuleBase
     private readonly TimeSpan duration;
 
     /// <summary>
-    /// Creates a new <see cref="ElapsedTimeRule"/> and records the start time as now.
+    /// Creates a new <see cref="ElapsedTimeRule"/>.
     /// </summary>
-    /// <param name="map">The map associated with the rule.</param>
-    /// <param name="robots">The robots collection associated with the rule.</param>
-    /// <param name="duration">The timespan after which the rule becomes applicable.</param>
-    public ElapsedTimeRule(IMap map, ReadOnlyCollection<IRobot> robots, TimeSpan duration)
-        : base(map, robots)
+    /// <param name="duration">The timespan for which the rule is applicable.</param>
+    public ElapsedTimeRule(TimeSpan duration)
     {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(duration, TimeSpan.Zero, nameof(duration));
 
-        this.startTime = null;
         this.duration = duration;
+    }
+
+    /// <inheritdoc/>
+    public override void Apply()
+    {
+        // No action needed when the rule is applied.
     }
 
     /// <inheritdoc/>
@@ -37,14 +34,7 @@ public sealed class ElapsedTimeRule : RuleBase
             return false;
         }
 
-        return (DateTime.UtcNow - this.startTime.Value) > this.duration;
-    }
-
-    /// <inheritdoc/>
-    [ExcludeFromCodeCoverage]
-    public override void Apply()
-    {
-        // No-op: this rule only represents a timed applicability check.
+        return (DateTime.UtcNow - startTime.Value).TotalMilliseconds <= duration.TotalMilliseconds;
     }
 
     /// <inheritdoc/>

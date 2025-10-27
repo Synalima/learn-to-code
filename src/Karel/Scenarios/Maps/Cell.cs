@@ -37,5 +37,5 @@ public sealed class Cell(uint x, uint y, uint z, IMap map, CellType type = CellT
     }
 
     /// <inheritdoc/>
-    public IMap Map { get; init; } = map;
+    public IMap Map { get; } = map;
 }

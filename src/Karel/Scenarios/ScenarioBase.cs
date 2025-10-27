@@ -14,7 +14,7 @@ public abstract class ScenarioBase : IScenario
     public IMap Map { get; }
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<IRule> Rules { get; }
+    protected ReadOnlyCollection<IRule> Rules { get; private set; }
 
     /// <inheritdoc/>
     public ReadOnlyObservableCollection<IRobot> Robots { get; init; }
@@ -28,7 +28,7 @@ public abstract class ScenarioBase : IScenario
     /// </remarks>
     public void Run()
     {
-        // TODO: Initialize robots' positions before starting the scenario, prefer CellType.Start if available.
+        this.Rules.ToList().ForEach(r => r.Initialize());
 
         bool rulesApplicable;
         do
@@ -56,20 +56,41 @@ public abstract class ScenarioBase : IScenario
     /// Protected constructor to initialize the scenario with specified parameters.
     /// </summary>
     /// <param name="map">The map associated with the scenario.</param>
-    /// <param name="rules">The rules applicable to the scenario.</param>
     /// <param name="robots">The robots involved in the scenario.</param>
-    protected ScenarioBase(IMap map, ReadOnlyCollection<IRule> rules, ReadOnlyObservableCollection<IRobot> robots)
+    /// <exception cref="ArgumentNullException">Thrown when map or robots is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when there are no robots in the scenario.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when there are no rules in the scenario.</exception> 
+    /// <remarks>
+    /// Derived implementations are responsible for constructing and assigning the Rules collection.
+    /// </remarks>
+    protected ScenarioBase(IMap map, ReadOnlyObservableCollection<IRobot> robots)
     {
-        // TODO: Refactor to remove circular dependency between ScenarioBase and RuleBase.
-        // TODO: Rules should not be passed, rather, created based on scenario configuration.
-
         ArgumentNullException.ThrowIfNull(map, nameof(map));
-        ArgumentNullException.ThrowIfNull(rules, nameof(rules));
         ArgumentNullException.ThrowIfNull(robots, nameof(robots));
         ArgumentOutOfRangeException.ThrowIfZero(robots.Count, nameof(robots));
 
         this.Map = map;
-        this.Rules = rules;
         this.Robots = robots;
+        this.Rules = new ReadOnlyCollection<IRule>(Array.Empty<IRule>());
+    }
+
+    /// <summary>
+    /// Allows derived scenario implementations to set the rules collection during construction.
+    /// </summary>
+    /// <param name="rules">The rules to assign to the scenario.</param>
+    /// <exception cref="ArgumentNullException">Thrown when rules is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when there are no rules in the scenario.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when rules have already been assigned.</exception>
+    protected void SetRules(ReadOnlyCollection<IRule> rules)
+    {
+        ArgumentNullException.ThrowIfNull(rules, nameof(rules));
+        ArgumentOutOfRangeException.ThrowIfZero(rules.Count, nameof(rules));
+
+        if (this.Rules.Count != 0)
+        {
+            throw new InvalidOperationException("Rules have already been assigned and may only be set once.");
+        }
+
+        this.Rules = rules;
     }
 }

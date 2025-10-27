@@ -15,14 +15,14 @@ public sealed class FlatMapTests
     [Fact]
     public void FlatMap_HasConstructorWithTwoInt32s()
     {
-        var map = new FlatMap(Random.Shared.Next(1u, 10u), Random.Shared.Next(11u, 20u));
+        var map = new FlatMap(Random.Shared.Next(2u, 10u), Random.Shared.Next(11u, 20u));
         Assert.NotNull(map);
     }
 
     [Fact]
     public void FlatMap_CreatesInstanceWithProvidedWidth()
     {
-        var expected = Random.Shared.Next(1u, 10u);
+        var expected = Random.Shared.Next(2u, 10u);
         var map = new FlatMap(expected, Random.Shared.Next(11u, 20u));
         Assert.Equal(expected, map.Width);
     }
@@ -31,28 +31,28 @@ public sealed class FlatMapTests
     public void FlatMap_CreatesInstanceWithProvidedHeight()
     {
         var expected = Random.Shared.Next(11u, 20u);
-        var map = new FlatMap(Random.Shared.Next(1u, 10u), expected);
+        var map = new FlatMap(Random.Shared.Next(2u, 10u), expected);
         Assert.Equal(expected, map.Height);
     }
 
     [Fact]
     public void FlatMap_HasDepthOfOne()
     {
-        var map = new FlatMap(Random.Shared.Next(1u, 10u), Random.Shared.Next(11u, 20u));
+        var map = new FlatMap(Random.Shared.Next(2u, 10u), Random.Shared.Next(11u, 20u));
         Assert.Equal(1u, map.Depth);
     }
 
     [Fact]
     public void FlatMap_InheritsFromGridMapBase()
     {
-        var map = new FlatMap(Random.Shared.Next(1u, 10u), Random.Shared.Next(11u, 20u));
+        var map = new FlatMap(Random.Shared.Next(2u, 10u), Random.Shared.Next(11u, 20u));
         Assert.IsAssignableFrom<GridMapBase>(map);
     }
 
     [Fact]
     public void FlatMap_TryGetCellReturnsFalse_WithInvalidX()
     {
-        var map = new FlatMap(Random.Shared.Next(1u, 10u), Random.Shared.Next(11u, 20u));
+        var map = new FlatMap(Random.Shared.Next(2u, 10u), Random.Shared.Next(11u, 20u));
         var success = map.TryGetCell(map.Width, Random.Shared.Next(0u, map.Height - 1u), 1u, out var cell);
         Assert.False(success);
         Assert.Null(cell);
@@ -61,7 +61,7 @@ public sealed class FlatMapTests
     [Fact]
     public void FlatMap_TryGetCellReturnsFalse_WithInvalidY()
     {
-        var map = new FlatMap(Random.Shared.Next(1u, 10u), Random.Shared.Next(11u, 20u));
+        var map = new FlatMap(Random.Shared.Next(2u, 10u), Random.Shared.Next(11u, 20u));
         var success = map.TryGetCell(Random.Shared.Next(0u, map.Width - 1u), map.Height, 1u, out var cell);
         Assert.False(success);
         Assert.Null(cell);
@@ -70,7 +70,7 @@ public sealed class FlatMapTests
     [Fact]
     public void FlatMap_TryGetCellReturnsFalse_WithInvalidZ()
     {
-        var map = new FlatMap(Random.Shared.Next(1u, 10u), Random.Shared.Next(11u, 20u));
+        var map = new FlatMap(Random.Shared.Next(2u, 10u), Random.Shared.Next(11u, 20u));
         var success = map.TryGetCell(Random.Shared.Next(0u, map.Width - 1u), Random.Shared.Next(0u, map.Height - 1u), Random.Shared.Next(2u, 10u), out var cell);
         Assert.False(success);
         Assert.Null(cell);
@@ -85,13 +85,13 @@ public sealed class FlatMapTests
     [Fact]
     public void FlatMap_ConstructorThrowsArgumentOutOfRangeException_WithInvalidHeight()
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => new FlatMap(Random.Shared.Next(1u, 10u), 0u));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new FlatMap(Random.Shared.Next(2u, 10u), 0u));
     }
 
     [Fact]
     public void FlatMap_ConstructorInitializesCells()
     {
-        var map = new FlatMap(Random.Shared.Next(1u, 10u), Random.Shared.Next(11u, 20u));
+        var map = new FlatMap(Random.Shared.Next(2u, 10u), Random.Shared.Next(11u, 20u));
         var ok = map.TryGetCell(0u, 0u, 0u, out var cell);
         Assert.True(ok);
         Assert.NotNull(cell);
@@ -100,7 +100,7 @@ public sealed class FlatMapTests
     [Fact]
     public void FlatMap_GetCellReturnsCorrectCell()
     {
-        var width = Random.Shared.Next(1u, 10u);
+        var width = Random.Shared.Next(2u, 10u);
         var height = Random.Shared.Next(11u, 20u);
         var map = new FlatMap(width, height);
 
@@ -121,7 +121,7 @@ public sealed class FlatMapTests
     [Fact]
     public void FlatMap_InboundsReturnsTrueForValidCoordinates()
     {
-        var width = Random.Shared.Next(1u, 10u);
+        var width = Random.Shared.Next(2u, 10u);
         var height = Random.Shared.Next(11u, 20u);
         var map = new FlatMap(width, height);
 
@@ -132,5 +132,42 @@ public sealed class FlatMapTests
                 Assert.True(map.InBounds(x, y, 0));
             }
         }
+    }
+
+    [Fact]
+    public void FlatMap_AssignsOneStartAndOneObjective_AndOthersEmpty()
+    {
+        var width = 5u;
+        var height = 5u;
+        var map = new FlatMap(width, height);
+
+        int startCount = 0;
+        int objectiveCount = 0;
+        int emptyCount = 0;
+        int total = 0;
+
+        for (uint x = 0; x < width; x++)
+        {
+            for (uint y = 0; y < height; y++)
+            {
+                total++;
+                var ok = map.TryGetCell(x, y, 0u, out var cell);
+                Assert.True(ok);
+                Assert.NotNull(cell);
+
+                var type = cell!.Type;
+
+                if (type.HasFlag(CellType.StartPosition)) startCount++;
+                if (type.HasFlag(CellType.Objective)) objectiveCount++;
+                if (type.HasFlag(CellType.Empty)) emptyCount++;
+            }
+        }
+
+        // Exactly one start and one objective
+        Assert.Equal(1, startCount);
+        Assert.Equal(1, objectiveCount);
+
+        // All cells must have the Empty flag set
+        Assert.Equal(total, emptyCount);
     }
 }

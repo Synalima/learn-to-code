@@ -111,11 +111,12 @@ public abstract class GridMapBase : IMap
     /// <param name="width">The width of the map.</param>
     /// <param name="height">The height of the map.</param>
     /// <param name="depth">The depth of the map.</param>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the width, height, or depth is less than or equal to zero.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the width or height are less than or equal to one.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the depth is equal to zero.</exception>
     public GridMapBase(uint width, uint height, uint depth)
     {
-        ArgumentOutOfRangeException.ThrowIfEqual(width, 0u, nameof(width));
-        ArgumentOutOfRangeException.ThrowIfEqual(height, 0u, nameof(height));
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(width, 1u, nameof(width));
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(height, 1u, nameof(height));
         ArgumentOutOfRangeException.ThrowIfEqual(depth, 0u, nameof(depth));
 
         this.Width = width;
