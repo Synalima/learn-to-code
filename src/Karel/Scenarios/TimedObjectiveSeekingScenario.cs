@@ -45,9 +45,9 @@ public class TimedObjectiveSeekingScenario : ScenarioBase
                     {
                         for (uint x = 0; x < map.Width; x++)
                         {
-                            if (map.TryGetCell(x, y, z, out var c) && c!.IsStartPosition())
+                            if (map.TryGetCell(x, y, z, out var c) && c.IsStartPosition())
                             {
-                                robot.Initialize(c!);
+                                robot.Initialize(c);
                                 goto NextRobot;
                             }
                         }
@@ -57,7 +57,7 @@ public class TimedObjectiveSeekingScenario : ScenarioBase
                 // If no start found, initialize to (0,0,0) if available
                 if (map.TryGetCell(0, 0, 0, out var fallback))
                 {
-                    robot.Initialize(fallback!);
+                    robot.Initialize(fallback);
                 }
             }
 

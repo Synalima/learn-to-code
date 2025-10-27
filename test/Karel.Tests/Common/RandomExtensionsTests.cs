@@ -80,7 +80,7 @@ public sealed class RandomExtensionsTests
     }
 
     [Fact]
-    public void Next_String_ThrowsNotSupportedException()
+    public void Next_Boolean_ThrowsNotSupportedException()
     {
         var rng = new Random(0);
         Assert.Throws<NotSupportedException>(() => rng.Next(false, true));
