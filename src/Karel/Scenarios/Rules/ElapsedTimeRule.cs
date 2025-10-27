@@ -1,7 +1,7 @@
 namespace Karel.Scenarios.Rules;
 
 /// <summary>
-/// A rule that is applicable for a fixed duration has elapsed since initialized.
+/// A rule that is applicable until a fixed duration has elapsed since initialization.
 /// </summary>
 public sealed class ElapsedTimeRule : RuleBase
 {

@@ -59,7 +59,6 @@ public abstract class ScenarioBase : IScenario
     /// <param name="robots">The robots involved in the scenario.</param>
     /// <exception cref="ArgumentNullException">Thrown when map or robots is null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when there are no robots in the scenario.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when there are no rules in the scenario.</exception> 
     /// <remarks>
     /// Derived implementations are responsible for constructing and assigning the Rules collection.
     /// </remarks>

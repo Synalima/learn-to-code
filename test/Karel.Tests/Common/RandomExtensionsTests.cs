@@ -15,7 +15,7 @@ public sealed class RandomExtensionsTests
         {
             // Forces call to extension method versus non-generic Random.Next(int, int)
             int value = rng.Next<int>(min, max);
-            Assert.InRange(value, min, max);
+            Assert.InRange(value, min, max - 1);
         }
     }
 
@@ -54,7 +54,7 @@ public sealed class RandomExtensionsTests
         for (int i = 0; i < 100; i++)
         {
             uint value = rng.Next(min, max);
-            Assert.InRange(value, min, max);
+            Assert.InRange(value, min, max - 1);
         }
     }
 

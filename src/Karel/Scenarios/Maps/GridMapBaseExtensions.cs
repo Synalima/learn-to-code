@@ -6,7 +6,7 @@ namespace Karel.Scenarios.Maps;
 public static class GridMapBaseExtensions
 {
 	/// <summary>
-	/// Randomly assigns exactly one StartPosition and one Objective cell on a flat map (depth=1).
+	/// Randomly assigns exactly one StartPosition and one Objective cell on a flat map (depth=0).
 	/// Both designated cells will also have the <see cref="CellType.Empty"/> flag set.
 	/// </summary>
 	/// <param name="map">The map to operate on.</param>

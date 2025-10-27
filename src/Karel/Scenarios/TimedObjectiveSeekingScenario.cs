@@ -28,45 +28,45 @@ public class TimedObjectiveSeekingScenario : ScenarioBase
     /// <param name="robots">The robots for the scenario.</param>
     /// <param name="duration">Duration after which the timed rule becomes applicable.</param>
 	public TimedObjectiveSeekingScenario(IMap map, ReadOnlyObservableCollection<IRobot> robots, TimeSpan duration)
-		: base(map, robots)
-	{
-		// Create the timed rule but defer initialization until Run() begins.
-		this.SetRules(new ReadOnlyCollection<IRule>([new ElapsedTimeRule(duration)]));
+        : base(map, robots)
+    {
+        // Create the timed rule but defer initialization until Run() begins.
+        this.SetRules(new ReadOnlyCollection<IRule>([new ElapsedTimeRule(duration)]));
 
-		// Ensure robots have initial positions if possible: prefer StartPosition cells.
-		foreach (var robot in this.Robots)
-		{
-			if (robot.Position == null)
-			{
-				// Try to find a start cell
-				for (uint z = 0; z < map.Depth; z++)
-				{
-					for (uint y = 0; y < map.Height; y++)
-					{
-						for (uint x = 0; x < map.Width; x++)
-						{
-							if (map.TryGetCell(x, y, z, out var c) && c!.IsStartPosition())
-							{
-								robot.Initialize(c!);
-								goto NextRobot;
-							}
-						}
-					}
-				}
+        // Ensure robots have initial positions if possible: prefer StartPosition cells.
+        foreach (var robot in this.Robots)
+        {
+            if (robot.Position == null)
+            {
+                // Try to find a start cell
+                for (uint z = 0; z < map.Depth; z++)
+                {
+                    for (uint y = 0; y < map.Height; y++)
+                    {
+                        for (uint x = 0; x < map.Width; x++)
+                        {
+                            if (map.TryGetCell(x, y, z, out var c) && c!.IsStartPosition())
+                            {
+                                robot.Initialize(c!);
+                                goto NextRobot;
+                            }
+                        }
+                    }
+                }
 
-				// If no start found, initialize to (0,0,0) if available
-				if (map.TryGetCell(0, 0, 0, out var fallback))
-				{
-					robot.Initialize(fallback!);
-				}
-			}
+                // If no start found, initialize to (0,0,0) if available
+                if (map.TryGetCell(0, 0, 0, out var fallback))
+                {
+                    robot.Initialize(fallback!);
+                }
+            }
 
-		NextRobot: ;
-		}
-	}
+        NextRobot:;
+        }
+    }
 
-	private static ReadOnlyObservableCollection<IRobot> CreateDefaultRobots()
-	{
-		return new ReadOnlyObservableCollection<IRobot>([new ObjectiveSeekingRobot(), new ObjectiveSeekingRobot()]);
-	}
+    private static ReadOnlyObservableCollection<IRobot> CreateDefaultRobots()
+    {
+        return new ReadOnlyObservableCollection<IRobot>([new ObjectiveSeekingRobot(), new ObjectiveSeekingRobot()]);
+    }
 }
