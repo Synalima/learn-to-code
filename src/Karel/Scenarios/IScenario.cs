@@ -11,24 +11,16 @@ namespace Karel.Scenarios;
 public interface IScenario
 {
     /// <summary>
-    /// Gets the total duration of the scenario.
-    /// </summary>
-    TimeSpan Duration { get; }
-
-    /// <summary>
     /// Gets the map associated with the scenario.
     /// </summary>
+    /// <exception cref="ArgumentNullException">Thrown when the map is null.</exception>
     IMap Map { get; }
-
-    /// <summary>
-    /// Gets the read-only collection of rules applicable to the scenario.
-    /// </summary>
-    ReadOnlyCollection<IRule> Rules { get; }
 
     /// <summary>
     /// Gets the read-only collection of robots participating in the scenario.
     /// </summary>
-    ReadOnlyCollection<IRobot> Robots { get; }
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when there are no robots in the scenario.</exception>
+    ReadOnlyObservableCollection<IRobot> Robots { get; }
 
     /// <summary>
     /// Runs the scenario.

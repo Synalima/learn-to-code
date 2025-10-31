@@ -7,54 +7,102 @@ public abstract class GridMapBase : IMap
 {
     private readonly Cell[,,] cells;
 
-    /// <summary>
-    /// The width of the map.
-    /// </summary>
+    /// <inheritdoc/>
     public uint Width { get; }
 
-    /// <summary>
-    /// The height of the map.
-    /// </summary>
+    /// <inheritdoc/>
     public uint Height { get; }
 
-    /// <summary>
-    /// The depth (number of layers) of the map.
-    /// </summary>
+    /// <inheritdoc/>
     public uint Depth { get; }
 
-    /// <summary>
-    /// Checks if the specified coordinates are within the bounds of the map, including depth.
-    /// </summary>
-    /// <param name="x">The x-coordinate to check.</param>
-    /// <param name="y">The y-coordinate to check.</param>
-    /// <param name="z">The z-coordinate (layer) to check.</param>
-    /// <returns>True if the coordinates are within bounds; otherwise, false.</returns>
-    public bool InBounds(uint x, uint y, uint z) => x >= 0 && y >= 0 && z >= 0 && x < this.Width && y < this.Height && z < this.Depth;
-
-    /// <summary>
-    /// Gets the cell at the specified coordinates including depth (z).
-    /// </summary>
-    /// <param name="x">The x-coordinate of the cell.</param>
-    /// <param name="y">The y-coordinate of the cell.</param>
-    /// <param name="z">The z-coordinate (layer) of the cell.</param>
-    /// <returns>The cell at the specified coordinates.</returns>
-    public virtual Cell GetCell(uint x, uint y, uint z)
+    /// <inheritdoc/>
+    public bool InBounds(ICell cell)
     {
-        if (!InBounds(x, y, z))
-        {
-            throw new IndexOutOfRangeException("Cell out of bounds");
-        }
+        ArgumentNullException.ThrowIfNull(cell);
 
-        return this.cells[x, y, z];
+        return this.InBounds(cell.X, cell.Y, cell.Z);
     }
 
-    /// <summary>
-    /// Private constructor for internal use.
-    /// </summary>
-    private GridMapBase()
+    /// <inheritdoc/>
+    public bool InBounds(uint x, uint y, uint z) => x < this.Width && y < this.Height && z < this.Depth;
+
+    /// <inheritdoc/>
+    public bool TryGetCell(uint x, uint y, uint z, out Cell? cell)
     {
-        // Provide safe defaults so non-nullable fields/properties are initialized.
-        this.cells = new Cell[this.Width, this.Height, this.Depth];
+        if (InBounds(x, y, z))
+        {
+            cell = this.cells[x, y, z];
+            return true;
+        }
+
+        cell = null;
+        return false;
+    }
+
+    /// <inheritdoc/>
+    public IEnumerable<ICell> GetOrthogonalNeighbors(ICell cell)
+    {
+        ArgumentNullException.ThrowIfNull(cell);
+
+        return this.GetOrthogonalNeighbors(cell.X, cell.Y, cell.Z);
+    }
+
+    /// <inheritdoc/>
+    public IEnumerable<ICell> GetOrthogonalNeighbors(uint x, uint y, uint z)
+    {
+        // Offsets for the 6 axis-aligned neighbors.
+        var deltas = new (int dx, int dy, int dz)[]
+        {
+            (1, 0, 0), (-1, 0, 0),
+            (0, 1, 0), (0, -1, 0),
+            (0, 0, 1), (0, 0, -1)
+        };
+
+        foreach (var (dx, dy, dz) in deltas)
+        {
+            long nx = x + dx;
+            long ny = y + dy;
+            long nz = z + dz;
+
+            if (nx >= 0 && ny >= 0 && nz >= 0
+                && (uint)nx < this.Width && (uint)ny < this.Height && (uint)nz < this.Depth)
+            {
+                yield return this.cells[(uint)nx, (uint)ny, (uint)nz];
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    public IEnumerable<ICell> GetAllAdjacentNeighbors(ICell cell)
+    {
+        ArgumentNullException.ThrowIfNull(cell);
+
+        return this.GetAllAdjacentNeighbors(cell.X, cell.Y, cell.Z);
+    }
+
+    /// <inheritdoc/>
+    public IEnumerable<ICell> GetAllAdjacentNeighbors(uint x, uint y, uint z)
+    {
+        for (int dz = -1; dz <= 1; dz++)
+            for (int dy = -1; dy <= 1; dy++)
+                for (int dx = -1; dx <= 1; dx++)
+                {
+                    if (dx == 0 && dy == 0 && dz == 0)
+                    {
+                        continue; // skip the center
+                    }
+
+                    long nx = x + dx;
+                    long ny = y + dy;
+                    long nz = z + dz;
+
+                    if (nx >= 0 && ny >= 0 && nz >= 0
+                        && (uint)nx < this.Width && (uint)ny < this.Height && (uint)nz < this.Depth)
+                    {
+                        yield return this.cells[(uint)nx, (uint)ny, (uint)nz];
+                    }
+                }
     }
 
     /// <summary>
@@ -63,23 +111,13 @@ public abstract class GridMapBase : IMap
     /// <param name="width">The width of the map.</param>
     /// <param name="height">The height of the map.</param>
     /// <param name="depth">The depth of the map.</param>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the width, height, or depth is less than or equal to zero.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the width or height are less than or equal to one.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the depth is equal to zero.</exception>
     public GridMapBase(uint width, uint height, uint depth)
     {
-        if (width == 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(width), "Width must be positive");
-        }
-
-        if (height == 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(height), "Height must be positive");
-        }
-
-        if (depth == 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(depth), "Depth must be positive");
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(width, 1u, nameof(width));
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(height, 1u, nameof(height));
+        ArgumentOutOfRangeException.ThrowIfEqual(depth, 0u, nameof(depth));
 
         this.Width = width;
         this.Height = height;
@@ -93,7 +131,7 @@ public abstract class GridMapBase : IMap
             {
                 for (uint z = 0; z < depth; z++)
                 {
-                    this.cells[x, y, z] = new Cell(x, y, z);
+                    this.cells[x, y, z] = new Cell(x, y, z, this);
                 }
             }
         }

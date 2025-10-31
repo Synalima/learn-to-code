@@ -21,6 +21,14 @@ public interface IMap
     uint Depth { get; }
 
     /// <summary>
+    /// Checks if the specified cell is within the bounds of the map.
+    /// </summary>
+    /// <param name="cell">The cell to check.</param>
+    /// <returns>True if the cell is within bounds; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="cell"/> is null.</exception>
+    bool InBounds(ICell cell);
+
+    /// <summary>
     /// Checks if the specified coordinates are within the bounds of the map.
     /// </summary>
     /// <param name="x">The x-coordinate to check.</param>
@@ -35,6 +43,41 @@ public interface IMap
     /// <param name="x">The x-coordinate of the cell.</param>
     /// <param name="y">The y-coordinate of the cell.</param>
     /// <param name="z">The z-coordinate of the cell.</param>
+    /// <param name="cell">The cell at the specified coordinates.</param>
     /// <returns>The cell at the specified coordinates.</returns>
-    Cell GetCell(uint x, uint y, uint z);
+    bool TryGetCell(uint x, uint y, uint z, out Cell? cell);
+
+    /// <summary>
+    /// Gets the orthogonal neighbors of the specified cell.
+    /// </summary>
+    /// <param name="cell">The cell whose neighbors to retrieve.</param>
+    /// <returns>An enumerable collection of orthogonal neighbor cells.</returns>
+    IEnumerable<ICell> GetOrthogonalNeighbors(ICell cell);
+
+    /// <summary>
+    /// Gets the orthogonal neighbors of the cell at the specified coordinates.
+    /// </summary>
+    /// <param name="x">The x-coordinate of the cell.</param>
+    /// <param name="y">The y-coordinate of the cell.</param>
+    /// <param name="z">The z-coordinate of the cell.</param>
+    /// <returns>An enumerable collection of orthogonal neighbor cells.</returns>
+    IEnumerable<ICell> GetOrthogonalNeighbors(uint x, uint y, uint z);
+
+    /// <summary>
+    /// Returns all adjacent neighbors in the 3x3x3 cube around the specified cell (up to 26 neighbors).
+    /// The center cell is excluded. Out-of-bounds neighbors are omitted.
+    /// </summary>
+    /// <param name="cell">The cell whose neighbors to retrieve.</param>
+    /// <returns>An enumerable collection of adjacent neighbor cells.</returns>
+    IEnumerable<ICell> GetAllAdjacentNeighbors(ICell cell);
+
+    /// <summary>
+    /// Returns all adjacent neighbors in the 3x3x3 cube around the specified cell (up to 26 neighbors).
+    /// The center cell is excluded. Out-of-bounds neighbors are omitted.
+    /// </summary>
+    /// <param name="x">The x-coordinate of the cell.</param>
+    /// <param name="y">The y-coordinate of the cell.</param>
+    /// <param name="z">The z-coordinate of the cell.</param>
+    /// <returns>An enumerable collection of adjacent neighbor cells.</returns>
+    IEnumerable<ICell> GetAllAdjacentNeighbors(uint x, uint y, uint z);
 }

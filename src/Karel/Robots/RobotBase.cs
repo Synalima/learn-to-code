@@ -6,28 +6,12 @@ namespace Karel.Robots;
 /// <summary>
 /// Base class for robots implementing common functionality.
 /// </summary>
-public abstract class RobotBase : ObservableBase, IRobot
+public abstract class RobotBase() : ObservableBase, IRobot
 {
-    private Direction facing;
-    private Cell position;
+    private ICell position = null!;
 
     /// <inheritdoc/>
-    public Direction Facing
-    {
-        get => this.facing;
-        protected set
-        {
-            if (!this.facing.Equals(value))
-            {
-                var oldValue = this.facing;
-                this.facing = value;
-                this.NotifyPropertyChanged(nameof(Facing), oldValue, value);
-            }
-        }
-    }
-
-    /// <inheritdoc/>
-    public Cell Position
+    public ICell Position
     {
         get => this.position;
         set
@@ -41,32 +25,56 @@ public abstract class RobotBase : ObservableBase, IRobot
         }
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RobotBase"/> class.
-    /// </summary>
-    /// <param name="facing">The initial facing direction of the robot.</param>
-    /// <param name="position">The initial position of the robot.</param>
-    protected RobotBase(Direction facing, Cell position)
+    /// <inheritdoc/>
+    public abstract void Act();
+
+    /// <inheritdoc/>
+    public void Initialize(ICell initialPosition)
     {
-        this.facing = facing;
-        this.position = position;
+        ArgumentNullException.ThrowIfNull(initialPosition);
+        ArgumentOutOfRangeException.ThrowIfEqual(initialPosition.Map.InBounds(initialPosition), false, nameof(initialPosition));
+
+        this.Position = initialPosition;
     }
 
     /// <inheritdoc/>
-    public void Move(MovementAxis axis)
+    public bool TryMoveTo(uint x, uint y, out IList<string> errors)
     {
-        // Implementation for moving the robot along the specified axis
-        switch (axis)
+        return this.TryMoveTo(x, y, 0, out errors);
+    }
+
+    /// <inheritdoc/>
+    public bool TryMoveTo(uint x, uint y, uint z, out IList<string> errors)
+    {
+        errors = [];
+
+        try
         {
-            case MovementAxis.X:
-                // Move in the X direction based on the Facing direction
-                break;
-            case MovementAxis.Y:
-                // Move in the Y direction based on the Facing direction
-                break;
-            case MovementAxis.Z:
-                // Move in the Z direction based on the Facing direction
-                break;
+            if (!this.Position.Map.TryGetCell(x, y, z, out var targetCell))
+            {
+                errors.Add("Target cell does not exist.");
+                return false;
+            }
+
+            if (!targetCell!.CanNavigate())
+            {
+                errors.Add("Target cell is not navigable.");
+                return false;
+            }
+
+            if (!this.Position.Map.GetAllAdjacentNeighbors(this.Position).Contains(targetCell))
+            {
+                errors.Add("Target cell is not adjacent.");
+                return false;
+            }
+
+            this.Position = targetCell!;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            errors.Add(ex.Message);
+            return false;
         }
     }
 }

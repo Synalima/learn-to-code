@@ -3,21 +3,6 @@ using Karel.Scenarios.Maps;
 namespace Karel.Robots;
 
 /// <summary>
-/// Represents the possible directions a robot can face.
-/// </summary>
-public enum Direction { North, East, South, West }
-
-/// <summary>
-/// Represents the axes along which a robot can move.
-/// </summary>
-/// <remarks>
-/// This enum is used to specify the axis of movement for the robot where X, Y, and Z correspond to the three-dimensional coordinate system. 
-/// Moving along the X axis changes the robot's horizontal position (left and right), Y changes the vertical position (forward and backward), 
-/// and Z would change depth (up and down) if applicable.
-/// </remarks>
-public enum MovementAxis { X, Y, Z }
-
-/// <summary>
 /// Defines the interface for a robot that can navigate a map, turn, and interact with its environment.
 /// </summary>
 public interface IRobot
@@ -25,18 +10,37 @@ public interface IRobot
     /// <summary>
     /// Gets the current position of the robot on the map.
     /// </summary>
-    Cell Position { get; }
+    ICell Position { get; }
 
     /// <summary>
-    /// Gets the direction the robot is currently facing.
+    /// Performs an action defined by the robot.
     /// </summary>
-    Direction Facing { get; }
+    void Act();
 
     /// <summary>
-    /// Moves the robot one unit forward in the direction indicated by the specified axis.
+    /// Initializes the robot with the specified initial position.
     /// </summary>
-    /// <param name="axis">
-    /// The axis along which to move the robot.
-    /// </param>
-    void Move(MovementAxis axis);
+    /// <param name="initialPosition">The initial position of the robot.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="initialPosition"/> is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="initialPosition"/> is out of the map bounds.</exception>
+    void Initialize(ICell initialPosition);
+
+    /// <summary>
+    /// Attempts to move the robot to the specified cell.
+    /// </summary>
+    /// <param name="x">The x-coordinate of the target cell.</param>
+    /// <param name="y">The y-coordinate of the target cell.</param>
+    /// <param name="errors">A list of errors that occurred during the move attempt.</param>
+    /// <returns>True if the move was successful; otherwise, false.</returns>
+    bool TryMoveTo(uint x, uint y, out IList<string> errors);
+
+    /// <summary>
+    /// Attempts to move the robot to the specified cell.
+    /// </summary>
+    /// <param name="x">The x-coordinate of the target cell.</param>
+    /// <param name="y">The y-coordinate of the target cell.</param>
+    /// <param name="z">The z-coordinate of the target cell.</param>
+    /// <param name="errors">A list of errors that occurred during the move attempt.</param>
+    /// <returns>True if the move was successful; otherwise, false.</returns>
+    bool TryMoveTo(uint x, uint y, uint z, out IList<string> errors);
 }

@@ -7,19 +7,29 @@ namespace Karel.Scenarios.Maps;
 public enum CellType
 {
     /// <summary>
+    /// No special type.
+    /// </summary>
+    None = 0,
+
+    /// <summary>
     /// An empty cell.
     /// </summary>
-    Empty = 0,
+    Empty = 1,
 
     /// <summary>
-    /// The starting position of the robot.
+    /// A starting position of the robot in the scenario.
     /// </summary>
-    StartPosition = 1,
+    StartPosition = 2,
 
     /// <summary>
-    /// A cell that is obstructed.
+    /// A cell that is obstructed, it can be neither entered nor passed through.
     /// </summary>
-    Obstructed = 2,
+    Obstructed = 4,
+
+    /// <summary>
+    /// An objective cell.    
+    /// </summary>
+    Objective = 8
 }
 
 /// <summary>
@@ -46,4 +56,9 @@ public interface ICell
     /// The type of the cell.
     /// </summary>
     public CellType Type { get; set; }
+
+    /// <summary>
+    /// The map this cell belongs to.
+    /// </summary>
+    public IMap Map { get; }
 }

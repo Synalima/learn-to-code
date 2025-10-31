@@ -1,7 +1,9 @@
 using Xunit;
 using Karel.Common;
 
-public class RandomExtensionsTests
+namespace Karel.Tests.Common;
+
+public sealed class RandomExtensionsTests
 {
     [Fact]
     public void Next_Int_ReturnsValueInRange()
@@ -54,5 +56,33 @@ public class RandomExtensionsTests
             uint value = rng.Next(min, max);
             Assert.InRange(value, min, max - 1);
         }
+    }
+
+    [Fact]
+    public void Next_Single_ReturnsValueInRange()
+    {
+        var rng = new Random(0);
+        float min = 100;
+        float max = 200;
+        for (int i = 0; i < 100; i++)
+        {
+            float value = rng.Next(min, max);
+            Assert.InRange(value, min, max);
+        }
+    }
+
+    [Fact]
+    public void Next_ReturnsMinValue_WhenMinEqualsMax()
+    {
+        var rng = new Random(0);
+        int value = rng.Next(42, 42);
+        Assert.Equal(42, value);
+    }
+
+    [Fact]
+    public void Next_Boolean_ThrowsNotSupportedException()
+    {
+        var rng = new Random(0);
+        Assert.Throws<NotSupportedException>(() => rng.Next(false, true));
     }
 }
